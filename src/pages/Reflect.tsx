@@ -108,7 +108,7 @@ const Reflect = () => {
           id: experienceId,
           description: description.trim(),
           context_where: where,
-          context_feeling: feeling,
+          context_feeling: feelings.length > 0 ? feelings.join(", ") : null,
           self_doubt: doubt,
         });
 
