@@ -44,10 +44,47 @@ const PillSelect = ({
   </div>
 );
 
+const PillMultiSelect = ({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string[];
+  onChange: (v: string[]) => void;
+}) => (
+  <div className="space-y-3">
+    <p className="text-sm font-medium text-foreground">{label}</p>
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => {
+        const selected = value.includes(opt);
+        return (
+          <button
+            key={opt}
+            type="button"
+            onClick={() =>
+              onChange(selected ? value.filter((v) => v !== opt) : [...value, opt])
+            }
+            className={`px-4 py-2 rounded-full text-sm transition-all border ${
+              selected
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+            }`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
-  const [feeling, setFeeling] = useState<string | null>(null);
+  const [feelings, setFeelings] = useState<string[]>([]);
   const [doubt, setDoubt] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -61,7 +98,8 @@ const Reflect = () => {
 
     setSubmitting(true);
     try {
-      const analysis = analyzeExperience(description, where ?? undefined, feeling ?? undefined);
+      const feelingStr = feelings.length > 0 ? feelings.join(", ") : undefined;
+      const analysis = analyzeExperience(description, where ?? undefined, feelingStr);
       const experienceId = crypto.randomUUID();
 
       const { error: expErr } = await supabase
@@ -70,7 +108,7 @@ const Reflect = () => {
           id: experienceId,
           description: description.trim(),
           context_where: where,
-          context_feeling: feeling,
+          context_feeling: feelings.length > 0 ? feelings.join(", ") : null,
           self_doubt: doubt,
         });
 
@@ -122,7 +160,7 @@ const Reflect = () => {
           />
 
           <PillSelect label="Where did it happen?" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
-          <PillSelect label="How did it feel?" options={FEELING_OPTIONS} value={feeling} onChange={setFeeling} />
+          <PillMultiSelect label="How did it feel? (select all that apply)" options={FEELING_OPTIONS} value={feelings} onChange={setFeelings} />
           <PillSelect label="Did you doubt yourself?" options={DOUBT_OPTIONS} value={doubt} onChange={setDoubt} />
 
           <Button
