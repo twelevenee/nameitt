@@ -98,7 +98,8 @@ const Reflect = () => {
 
     setSubmitting(true);
     try {
-      const analysis = analyzeExperience(description, where ?? undefined, feeling ?? undefined);
+      const feelingStr = feelings.length > 0 ? feelings.join(", ") : undefined;
+      const analysis = analyzeExperience(description, where ?? undefined, feelingStr);
       const experienceId = crypto.randomUUID();
 
       const { error: expErr } = await supabase
