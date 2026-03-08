@@ -84,7 +84,7 @@ const PillMultiSelect = ({
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
-  const [feeling, setFeeling] = useState<string | null>(null);
+  const [feelings, setFeelings] = useState<string[]>([]);
   const [doubt, setDoubt] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
