@@ -160,7 +160,7 @@ const Reflect = () => {
           />
 
           <PillSelect label="Where did it happen?" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
-          <PillSelect label="How did it feel?" options={FEELING_OPTIONS} value={feeling} onChange={setFeeling} />
+          <PillMultiSelect label="How did it feel? (select all that apply)" options={FEELING_OPTIONS} value={feelings} onChange={setFeelings} />
           <PillSelect label="Did you doubt yourself?" options={DOUBT_OPTIONS} value={doubt} onChange={setDoubt} />
 
           <Button
