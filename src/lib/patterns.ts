@@ -98,9 +98,10 @@ export function analyzeExperience(
       score += 0.5;
     }
     // Feeling-based boost
-    if (contextFeeling === "unsafe" && pattern.key === "safety_threat") score += 0.5;
-    if (contextFeeling === "humiliating" && pattern.key === "objectification") score += 0.5;
-    if (contextFeeling === "confusing" && pattern.key === "benevolent_sexism") score += 0.5;
+    const f = contextFeeling?.toLowerCase() ?? "";
+    if (f.includes("unsafe") && pattern.key === "safety_threat") score += 0.5;
+    if (f.includes("humiliating") && pattern.key === "objectification") score += 0.5;
+    if (f.includes("confusing") && pattern.key === "benevolent_sexism") score += 0.5;
 
     return { pattern, score };
   })
