@@ -14,7 +14,97 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analyses: {
+        Row: {
+          created_at: string
+          detected_patterns: Json
+          experience_id: string
+          id: string
+          self_doubt_detected: boolean
+        }
+        Insert: {
+          created_at?: string
+          detected_patterns?: Json
+          experience_id: string
+          id?: string
+          self_doubt_detected?: boolean
+        }
+        Update: {
+          created_at?: string
+          detected_patterns?: Json
+          experience_id?: string
+          id?: string
+          self_doubt_detected?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analyses_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiences: {
+        Row: {
+          context_feeling: string | null
+          context_where: string | null
+          contributed: boolean
+          created_at: string
+          description: string
+          id: string
+          self_doubt: string | null
+        }
+        Insert: {
+          context_feeling?: string | null
+          context_where?: string | null
+          contributed?: boolean
+          created_at?: string
+          description: string
+          id?: string
+          self_doubt?: string | null
+        }
+        Update: {
+          context_feeling?: string | null
+          context_where?: string | null
+          contributed?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          self_doubt?: string | null
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          created_at: string
+          experience_id: string
+          id: string
+          resonated: string
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          id?: string
+          resonated: string
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          id?: string
+          resonated?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_feedback_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
