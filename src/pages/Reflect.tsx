@@ -44,6 +44,43 @@ const PillSelect = ({
   </div>
 );
 
+const PillMultiSelect = ({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string[];
+  onChange: (v: string[]) => void;
+}) => (
+  <div className="space-y-3">
+    <p className="text-sm font-medium text-foreground">{label}</p>
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => {
+        const selected = value.includes(opt);
+        return (
+          <button
+            key={opt}
+            type="button"
+            onClick={() =>
+              onChange(selected ? value.filter((v) => v !== opt) : [...value, opt])
+            }
+            className={`px-4 py-2 rounded-full text-sm transition-all border ${
+              selected
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+            }`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
