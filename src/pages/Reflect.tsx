@@ -62,23 +62,23 @@ const Reflect = () => {
     setSubmitting(true);
     try {
       const analysis = analyzeExperience(description, where ?? undefined, feeling ?? undefined);
+      const experienceId = crypto.randomUUID();
 
-      const { data: exp, error: expErr } = await supabase
+      const { error: expErr } = await supabase
         .from("experiences")
         .insert({
+          id: experienceId,
           description: description.trim(),
           context_where: where,
           context_feeling: feeling,
           self_doubt: doubt,
-        })
-        .select("id")
-        .single();
+        });
 
       if (expErr) throw expErr;
 
       const { error: anaErr } = await supabase.from("analyses").insert({
-        experience_id: exp.id,
-        detected_patterns: analysis.patterns.map((p) => p.key),
+        experience_id: experienceId,
+        detected_patterns: analysis.patterns.map((p) => p.key) as unknown as import("@/integrations/supabase/types").Json,
         self_doubt_detected: analysis.selfDoubtDetected,
       });
 
@@ -86,7 +86,7 @@ const Reflect = () => {
 
       navigate("/results", {
         state: {
-          experienceId: exp.id,
+          experienceId,
           patterns: analysis.patterns,
           selfDoubtDetected: analysis.selfDoubtDetected,
         },
