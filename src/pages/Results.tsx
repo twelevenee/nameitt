@@ -149,23 +149,16 @@ const ScriptCard = ({ script }: { script: Script }) => {
 };
 
 // --- Inline Story Card ---
-interface InlineStory {
-  id: string;
-  title: string;
-  story: string;
-  primary_pattern: string;
-  created_at: string;
-  story_type: string;
-  contains_sensitive_content: boolean;
-  sensitive_content_type: string | null;
-  source_note: string | null;
-}
+import { findMatchingStories, type MatchedStory } from "@/lib/story-matching";
 
-const InlineStoryCard = ({ story }: { story: InlineStory }) => {
+const InlineStoryCard = ({ story, userContext, userFeeling }: { story: MatchedStory; userContext?: string; userFeeling?: string }) => {
   const [revealed, setRevealed] = useState(false);
   const pattern = getPatternByKey(story.primary_pattern);
   const isSensitive = story.contains_sensitive_content;
   const showContent = !isSensitive || revealed;
+
+  const contextMatch = userContext && story.context && story.context.toLowerCase() === userContext.toLowerCase();
+  const feelingMatch = userFeeling && story.feeling && story.feeling.toLowerCase() === userFeeling.toLowerCase();
 
   return (
     <div className="rounded-2xl bg-card/80 p-5 space-y-3 shadow-[var(--shadow-card)]">
@@ -187,6 +180,17 @@ const InlineStoryCard = ({ story }: { story: InlineStory }) => {
           <button onClick={() => setRevealed(true)} className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors">
             Read this story
           </button>
+        </div>
+      )}
+      {/* Emotional context labels */}
+      {(contextMatch || feelingMatch) && showContent && (
+        <div className="space-y-1">
+          {contextMatch && (
+            <p className="text-xs text-muted-foreground/60 italic">Also happened at {story.context}</p>
+          )}
+          {feelingMatch && (
+            <p className="text-xs text-muted-foreground/60 italic">They felt {story.feeling} too.</p>
+          )}
         </div>
       )}
       <div className="flex items-center gap-3">
