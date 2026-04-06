@@ -116,7 +116,7 @@ const Reflect = () => {
 
       const { error: anaErr } = await supabase.from("analyses").insert({
         experience_id: experienceId,
-        detected_patterns: analysis.patterns.map((p) => p.key) as unknown as import("@/integrations/supabase/types").Json,
+        detected_patterns: analysis.matches.map((m) => m.pattern.key) as unknown as import("@/integrations/supabase/types").Json,
         self_doubt_detected: analysis.selfDoubtDetected,
       });
 
@@ -125,8 +125,9 @@ const Reflect = () => {
       navigate("/results", {
         state: {
           experienceId,
-          patterns: analysis.patterns,
+          matches: analysis.matches,
           selfDoubtDetected: analysis.selfDoubtDetected,
+          lowConfidence: analysis.lowConfidence,
         },
       });
     } catch {
