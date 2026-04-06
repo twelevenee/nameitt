@@ -528,6 +528,10 @@ const Results = () => {
                   Want to keep track of your reflections over time? Create a private journal.
                 </p>
               )}
+              <Link to="/stories" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors">
+                <BookText className="w-3.5 h-3.5" aria-hidden="true" />
+                Read how others have navigated similar experiences
+              </Link>
             </div>
 
             {/* Share with someone you trust */}
