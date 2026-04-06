@@ -12,10 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import type { PatternMatch, AIAnalysisResult } from "@/lib/patterns";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
-  harassment: <AlertTriangle className="w-5 h-5" />,
-  public_intimidation: <Zap className="w-5 h-5" />,
-  safety_threat: <Shield className="w-5 h-5" />,
-};
 
 const CONFIDENCE_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
   high: { label: "Strong match", variant: "default" },
