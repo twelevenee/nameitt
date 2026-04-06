@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Heart } from "lucide-react";
+import { BarChart3, Heart, BookOpen } from "lucide-react";
 
 const Landing = () => {
   useEffect(() => {
@@ -42,12 +42,21 @@ const Landing = () => {
             </Button>
           </div>
 
-          <div className="pt-8">
+          <div className="pt-6 space-y-4">
             <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/80 shadow-[var(--shadow-soft)]">
               <div className="w-2 h-2 rounded-full bg-primary/40" />
               <p className="text-xs text-muted-foreground">
                 No account needed · Fully anonymous · Your words aren't stored
               </p>
+            </div>
+            <div className="block">
+              <Link
+                to="/my-journal"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+              >
+                <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                Access your private journal
+              </Link>
             </div>
           </div>
         </div>

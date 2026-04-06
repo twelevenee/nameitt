@@ -54,6 +54,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          journal_user_id: string | null
           self_doubt: string | null
         }
         Insert: {
@@ -63,6 +64,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          journal_user_id?: string | null
           self_doubt?: string | null
         }
         Update: {
@@ -72,7 +74,34 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          journal_user_id?: string | null
           self_doubt?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiences_journal_user_id_fkey"
+            columns: ["journal_user_id"]
+            isOneToOne: false
+            referencedRelation: "journal_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_users: {
+        Row: {
+          created_at: string
+          id: string
+          passphrase_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          passphrase_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          passphrase_hash?: string
         }
         Relationships: []
       }

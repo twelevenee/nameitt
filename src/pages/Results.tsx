@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink,
+  ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink, BookOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { PatternMatch, AIAnalysisResult } from "@/lib/patterns";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
+import { getSessionUserId } from "@/lib/journal-auth";
 
 const PILL_BASE = "px-4 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 const PILL_ACTIVE = "bg-primary text-primary-foreground";
@@ -330,12 +331,27 @@ const Results = () => {
           <div className="rounded-2xl bg-accent/50 p-8 text-center space-y-4">
             <p className="text-foreground font-medium">Thank you for reflecting.</p>
             <p className="text-sm text-muted-foreground">You are not alone in questioning these experiences.</p>
-            <Button asChild variant="outline" className="rounded-full">
-              <Link to="/reflect" className="flex items-center gap-2">
-                <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                Reflect on another experience
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Button asChild variant="outline" className="rounded-full">
+                <Link to="/reflect" className="flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                  Reflect on another experience
+                </Link>
+              </Button>
+              {!getSessionUserId() && (
+                <Button asChild variant="ghost" className="rounded-full text-muted-foreground">
+                  <Link to="/my-journal" className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" aria-hidden="true" />
+                    Save to my journal
+                  </Link>
+                </Button>
+              )}
+            </div>
+            {!getSessionUserId() && (
+              <p className="text-xs text-muted-foreground/70">
+                Want to keep track of your reflections over time? Create a private journal.
+              </p>
+            )}
           </div>
         )}
 
