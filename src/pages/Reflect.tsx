@@ -6,6 +6,7 @@ import { ArrowLeft, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
+import type { AIAnalysisResult } from "@/lib/patterns";
 import { useToast } from "@/hooks/use-toast";
 
 const WHERE_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online", "other"];
@@ -99,9 +100,30 @@ const Reflect = () => {
     setSubmitting(true);
     try {
       const feelingStr = feelings.length > 0 ? feelings.join(", ") : undefined;
-      const analysis = analyzeExperience(description, where ?? undefined, feelingStr);
       const experienceId = crypto.randomUUID();
 
+      // Try AI analysis first
+      let aiResult: AIAnalysisResult | null = null;
+      try {
+        const { data, error } = await supabase.functions.invoke("analyze-experience", {
+          body: {
+            description: description.trim(),
+            contextWhere: where,
+            contextFeeling: feelingStr,
+            selfDoubt: doubt,
+          },
+        });
+        if (!error && data && data.patterns) {
+          aiResult = data as AIAnalysisResult;
+        }
+      } catch {
+        console.warn("AI analysis failed, falling back to local analysis");
+      }
+
+      // Fallback to local analysis
+      const localAnalysis = analyzeExperience(description, where ?? undefined, feelingStr);
+
+      // Store experience
       const { error: expErr } = await supabase
         .from("experiences")
         .insert({
@@ -114,10 +136,18 @@ const Reflect = () => {
 
       if (expErr) throw expErr;
 
+      // Store analysis — use AI patterns if available, else local
+      const detectedPatterns = aiResult
+        ? aiResult.patterns.map((p) => p.key)
+        : localAnalysis.matches.map((m) => m.pattern.key);
+      const selfDoubtDetected = aiResult
+        ? aiResult.selfDoubtDetected
+        : localAnalysis.selfDoubtDetected;
+
       const { error: anaErr } = await supabase.from("analyses").insert({
         experience_id: experienceId,
-        detected_patterns: analysis.matches.map((m) => m.pattern.key) as unknown as import("@/integrations/supabase/types").Json,
-        self_doubt_detected: analysis.selfDoubtDetected,
+        detected_patterns: detectedPatterns as unknown as import("@/integrations/supabase/types").Json,
+        self_doubt_detected: selfDoubtDetected,
       });
 
       if (anaErr) throw anaErr;
@@ -125,9 +155,10 @@ const Reflect = () => {
       navigate("/results", {
         state: {
           experienceId,
-          matches: analysis.matches,
-          selfDoubtDetected: analysis.selfDoubtDetected,
-          lowConfidence: analysis.lowConfidence,
+          matches: localAnalysis.matches,
+          selfDoubtDetected,
+          lowConfidence: aiResult ? false : localAnalysis.lowConfidence,
+          aiResult,
         },
       });
     } catch {
@@ -170,7 +201,7 @@ const Reflect = () => {
             size="lg"
             className="rounded-full px-8 h-12 text-base w-full sm:w-auto"
           >
-            {submitting ? "Analyzing…" : (
+            {submitting ? "Taking a moment to understand your experience…" : (
               <>
                 <Send className="w-4 h-4" />
                 Reflect

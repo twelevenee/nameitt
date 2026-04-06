@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useLocation, Link, Navigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RefreshCw, AlertTriangle, Heart, Shield, Eye, Users, MessageCircle, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import type { PatternMatch } from "@/lib/patterns";
+import type { PatternMatch, AIAnalysisResult } from "@/lib/patterns";
+import { getPatternByKey } from "@/lib/patterns";
 
 const PATTERN_ICONS: Record<string, React.ReactNode> = {
   emotional_invalidation: <MessageCircle className="w-5 h-5" />,
@@ -17,6 +19,12 @@ const PATTERN_ICONS: Record<string, React.ReactNode> = {
   safety_threat: <Shield className="w-5 h-5" />,
 };
 
+const CONFIDENCE_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+  high: { label: "Strong match", variant: "default" },
+  medium: { label: "Possible match", variant: "secondary" },
+  low: { label: "Worth considering", variant: "outline" },
+};
+
 const Results = () => {
   const location = useLocation();
   const state = location.state as {
@@ -24,6 +32,7 @@ const Results = () => {
     matches: PatternMatch[];
     selfDoubtDetected: boolean;
     lowConfidence: boolean;
+    aiResult?: AIAnalysisResult | null;
   } | null;
 
   const [resonated, setResonated] = useState<string | null>(null);
@@ -54,6 +63,9 @@ const Results = () => {
     }
   };
 
+  const ai = state.aiResult;
+  const useAI = ai && ai.patterns && ai.patterns.length > 0;
+
   return (
     <div className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
       <div className="max-w-2xl mx-auto space-y-10">
@@ -73,6 +85,13 @@ const Results = () => {
           </p>
         </div>
 
+        {/* AI validation message */}
+        {ai?.validationMessage && (
+          <div className="rounded-2xl bg-primary/10 border border-primary/20 p-5">
+            <p className="text-sm text-foreground leading-relaxed">{ai.validationMessage}</p>
+          </div>
+        )}
+
         {state.selfDoubtDetected && (
           <div className="rounded-2xl bg-accent/60 border border-border/50 p-5 space-y-2">
             <p className="text-sm font-medium text-foreground">
@@ -85,18 +104,49 @@ const Results = () => {
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {state.matches.map((match) => (
-            <Card key={match.pattern.key} className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
-              <CardContent className="p-5 space-y-3">
-                <div className="flex items-center gap-3 text-primary">
-                  {PATTERN_ICONS[match.pattern.key]}
-                  <h3 className="font-semibold text-foreground font-sans text-base">{match.pattern.title}</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{match.pattern.explanation}</p>
-                <p className="text-sm text-foreground/80 italic leading-relaxed">{match.pattern.whyRelates}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {useAI
+            ? ai.patterns.map((aiMatch) => {
+                const pattern = getPatternByKey(aiMatch.key);
+                const conf = CONFIDENCE_LABELS[aiMatch.confidence] ?? CONFIDENCE_LABELS.low;
+                return (
+                  <Card key={aiMatch.key} className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="flex items-center gap-3 text-primary">
+                        {PATTERN_ICONS[aiMatch.key]}
+                        <h3 className="font-semibold text-foreground font-sans text-base">
+                          {pattern?.title ?? aiMatch.key}
+                        </h3>
+                      </div>
+                      <Badge variant={conf.variant} className="text-xs">{conf.label}</Badge>
+                      {pattern && (
+                        <p className="text-sm text-muted-foreground leading-relaxed">{pattern.explanation}</p>
+                      )}
+                      <div className="border-t border-border/40 pt-3">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">In your experience…</p>
+                        <p className="text-sm text-foreground/80 italic leading-relaxed">
+                          {aiMatch.personalizedExplanation}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            : state.matches.map((match) => {
+                const conf = CONFIDENCE_LABELS[match.confidence] ?? CONFIDENCE_LABELS.low;
+                return (
+                  <Card key={match.pattern.key} className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="flex items-center gap-3 text-primary">
+                        {PATTERN_ICONS[match.pattern.key]}
+                        <h3 className="font-semibold text-foreground font-sans text-base">{match.pattern.title}</h3>
+                      </div>
+                      <Badge variant={conf.variant} className="text-xs">{conf.label}</Badge>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{match.pattern.explanation}</p>
+                      <p className="text-sm text-foreground/80 italic leading-relaxed">{match.pattern.whyRelates}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
         </div>
 
         {!submitted ? (
