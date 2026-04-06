@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, Heart, Shield, Eye, Users, MessageCircle, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import type { Pattern } from "@/lib/patterns";
+import type { PatternMatch } from "@/lib/patterns";
 
 const PATTERN_ICONS: Record<string, React.ReactNode> = {
   emotional_invalidation: <MessageCircle className="w-5 h-5" />,
@@ -21,8 +21,9 @@ const Results = () => {
   const location = useLocation();
   const state = location.state as {
     experienceId: string;
-    patterns: Pattern[];
+    matches: PatternMatch[];
     selfDoubtDetected: boolean;
+    lowConfidence: boolean;
   } | null;
 
   const [resonated, setResonated] = useState<string | null>(null);
