@@ -10,6 +10,8 @@ import { PATTERNS } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { getRandomAffirmation } from "@/lib/affirmations";
+import { FloatingShapes, WarmBlobs } from "@/components/Illustrations";
 
 const CHART_COLORS = [
   "hsl(230, 30%, 65%)",
@@ -199,8 +201,12 @@ const Patterns = () => {
   const maxCount = stats?.patternCounts?.[0]?.count ?? 0;
 
   return (
-    <div id="main-content" className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
-      <div className="max-w-3xl mx-auto space-y-12">
+    <div id="main-content" className="min-h-screen px-6 py-10 relative" style={{ background: "var(--gradient-warm)" }}>
+      {/* Background illustrations */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <FloatingShapes className="absolute inset-0 w-full h-full opacity-80" />
+      </div>
+      <div className="max-w-3xl mx-auto space-y-12 relative z-10">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
           <ArrowLeft className="w-4 h-4" aria-hidden="true" />
           Back
@@ -243,14 +249,17 @@ const Patterns = () => {
               <h2 className="text-2xl text-foreground tracking-tight">What People Are Sharing</h2>
 
               {!hasData ? (
-                <div className="rounded-2xl bg-card p-8 text-center space-y-4 shadow-[var(--shadow-soft)]">
+                <div className="rounded-2xl bg-card p-8 text-center space-y-6 shadow-[var(--shadow-soft)]">
+                  <div className="flex justify-center">
+                    <WarmBlobs className="w-48 h-36 opacity-60" />
+                  </div>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-                    As more people choose to share their anonymous reflections, patterns will appear here. Every contribution helps others feel less alone.
+                    As more people reflect, patterns will emerge here. Every voice matters.
                   </p>
                   <Button asChild className="rounded-full">
                     <Link to="/reflect" className="inline-flex items-center gap-2">
                       <Send className="w-4 h-4" aria-hidden="true" />
-                      Share your reflection
+                      Add yours
                     </Link>
                   </Button>
                 </div>
@@ -332,9 +341,12 @@ const Patterns = () => {
           </Link>
         </div>
 
-        <p className="text-xs text-muted-foreground/60 text-center pb-6">
-          This dashboard shows aggregate data only. No individual experiences are identifiable.
-        </p>
+        <footer className="space-y-3 pb-6">
+          <p className="text-xs text-muted-foreground/40 italic text-center">"{getRandomAffirmation()}"</p>
+          <p className="text-xs text-muted-foreground/60 text-center">
+            This dashboard shows aggregate data only. No individual experiences are identifiable.
+          </p>
+        </footer>
       </div>
     </div>
   );

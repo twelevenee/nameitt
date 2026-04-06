@@ -15,6 +15,21 @@ import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { getSessionUserId } from "@/lib/journal-auth";
 import { FALLBACK_SCRIPTS } from "@/lib/fallback-scripts";
 import type { Script } from "@/lib/fallback-scripts";
+import { getRandomAffirmation, getValidationAffirmation, AFFIRMATIONS } from "@/lib/affirmations";
+import { WarmBlobs, GentleWave } from "@/components/Illustrations";
+
+const LoadingAffirmation = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % AFFIRMATIONS.length), 3000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <p className="text-sm text-muted-foreground/60 italic transition-opacity duration-500">
+      "{AFFIRMATIONS[idx]}"
+    </p>
+  );
+};
 
 const PILL_BASE = "px-4 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 const PILL_ACTIVE = "bg-primary text-primary-foreground";
@@ -324,8 +339,12 @@ const Results = () => {
   };
 
   return (
-    <div id="main-content" className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
-      <div className="max-w-2xl mx-auto space-y-12">
+    <div id="main-content" className="min-h-screen px-6 py-10 relative" style={{ background: "var(--gradient-warm)" }}>
+      {/* Background warmth */}
+      <div className="absolute top-[60px] left-[-50px] z-0 pointer-events-none opacity-50">
+        <WarmBlobs className="w-[350px] h-[250px]" />
+      </div>
+      <div className="max-w-2xl mx-auto space-y-12 relative z-10">
         <Link to="/reflect" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
           <ArrowLeft className="w-4 h-4" aria-hidden="true" />Back
         </Link>
@@ -421,7 +440,10 @@ const Results = () => {
             )}
 
             {scriptsLoading && (
-              <p className="text-sm text-muted-foreground animate-pulse">Thinking of words that might help…</p>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground animate-pulse">Thinking of words that might help…</p>
+                <LoadingAffirmation />
+              </div>
             )}
 
             {scripts && (
@@ -446,6 +468,18 @@ const Results = () => {
             )}
           </div>
         )}
+
+        {/* Affirmation between sections */}
+        <div className="text-center py-2">
+          <p className="text-sm text-muted-foreground/50 italic">
+            "{state.selfDoubtDetected ? getValidationAffirmation() : getRandomAffirmation()}"
+          </p>
+        </div>
+
+        {/* Wave divider */}
+        <div className="relative -mx-6">
+          <GentleWave className="opacity-50" />
+        </div>
 
         {/* Gentle next steps */}
         <div className="rounded-2xl bg-card p-6 sm:p-8 space-y-4 shadow-[var(--shadow-soft)]">
@@ -586,9 +620,12 @@ const Results = () => {
           </CollapsibleContent>
         </Collapsible>
 
-        <p className="text-xs text-muted-foreground/60 text-center pb-6">
-          This tool does not provide legal, medical, or clinical advice.
-        </p>
+        <footer className="space-y-3 pb-6">
+          <p className="text-xs text-muted-foreground/40 italic text-center">"{getRandomAffirmation()}"</p>
+          <p className="text-xs text-muted-foreground/60 text-center">
+            This tool does not provide legal, medical, or clinical advice.
+          </p>
+        </footer>
       </div>
     </div>
   );

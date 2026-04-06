@@ -23,6 +23,8 @@ import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { detectEscalation, FEELING_SCORES } from "@/lib/escalation";
 import type { EscalationResult } from "@/lib/escalation";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Dot } from "recharts";
+import { getRandomAffirmation } from "@/lib/affirmations";
+import { QuietScene, WarmGlow } from "@/components/Illustrations";
 
 // --- Types ---
 
@@ -447,16 +449,23 @@ const JournalTimeline = () => {
 
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-4xl text-foreground tracking-tight">My Journal</h1>
-          <p className="text-muted-foreground text-sm">Your private reflection timeline.</p>
+          <p className="text-muted-foreground text-sm italic">"{getRandomAffirmation()}"</p>
         </div>
 
         {loading ? (
           <p className="text-muted-foreground text-center py-16" role="status">Loading your reflections…</p>
         ) : (
           <>
-            {/* Check-in prompt */}
+            {/* Check-in prompt with warm glow */}
             {showCheckin && userId && (
-              <CheckInCard userId={userId} onComplete={() => { setShowCheckin(false); fetchData(); }} />
+              <div className="relative">
+                <div className="absolute -top-6 -right-6 z-0 pointer-events-none opacity-50">
+                  <WarmGlow size={140} />
+                </div>
+                <div className="relative z-10">
+                  <CheckInCard userId={userId} onComplete={() => { setShowCheckin(false); fetchData(); }} />
+                </div>
+              </div>
             )}
 
             {/* Escalation message */}
@@ -470,13 +479,16 @@ const JournalTimeline = () => {
 
             {/* Timeline */}
             {timeline.length === 0 ? (
-              <div className="rounded-2xl bg-card p-8 text-center space-y-4 shadow-[var(--shadow-soft)]">
+              <div className="rounded-2xl bg-card p-8 text-center space-y-6 shadow-[var(--shadow-soft)]">
+                <div className="flex justify-center">
+                  <QuietScene className="w-48 h-36 opacity-60" />
+                </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your journal is empty. When you reflect on an experience, it will appear here.
+                  This is your space. Nothing here yet, and that's perfectly okay. When you're ready to reflect, your thoughts will live here.
                 </p>
                 <Button asChild className="rounded-full">
                   <Link to="/reflect" className="inline-flex items-center gap-2">
-                    <PenLine className="w-4 h-4" aria-hidden="true" />Reflect on an experience
+                    <PenLine className="w-4 h-4" aria-hidden="true" />Begin your first reflection
                   </Link>
                 </Button>
               </div>

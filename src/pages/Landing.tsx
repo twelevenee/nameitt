@@ -6,6 +6,8 @@ import { BarChart3, Heart, BookOpen, BookText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
+import { getRandomAffirmation } from "@/lib/affirmations";
+import { WarmBlobs, FloatingShapes } from "@/components/Illustrations";
 
 interface FeaturedStory {
   id: string;
@@ -16,6 +18,7 @@ interface FeaturedStory {
 
 const Landing = () => {
   const [featured, setFeatured] = useState<FeaturedStory[]>([]);
+  const [affirmation] = useState(getRandomAffirmation);
 
   useEffect(() => {
     document.title = "Was I Too Sensitive? — A Reflective Tool";
@@ -35,6 +38,12 @@ const Landing = () => {
       <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(35 30% 95%), hsl(28 25% 94%) 30%, hsl(250 20% 94%) 70%, hsl(230 22% 93%))" }} />
       <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, hsl(230 30% 65%), transparent 70%)" }} />
       <div className="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, hsl(25 40% 70%), transparent 70%)" }} />
+
+      {/* Background illustrations */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <WarmBlobs className="absolute top-[10%] left-[5%] w-[400px] h-[300px] opacity-60" />
+        <FloatingShapes className="absolute inset-0 w-full h-full opacity-80" />
+      </div>
 
       <div className="flex-1 flex items-center justify-center px-6 py-16 relative z-10">
         <div className="max-w-xl text-center space-y-8">
@@ -124,7 +133,10 @@ const Landing = () => {
         </div>
       </div>
 
-      <footer className="pb-8 px-6 text-center relative z-10">
+      <footer className="pb-8 px-6 text-center relative z-10 space-y-3">
+        <p className="text-xs text-muted-foreground/40 italic" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          "{affirmation}"
+        </p>
         <p className="text-xs text-muted-foreground/50 max-w-md mx-auto leading-relaxed">
           This tool does not provide legal, medical, or clinical advice. It is designed to support personal reflection only.
         </p>

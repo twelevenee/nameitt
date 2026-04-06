@@ -9,6 +9,21 @@ import { analyzeExperience } from "@/lib/patterns";
 import type { AIAnalysisResult } from "@/lib/patterns";
 import { useToast } from "@/hooks/use-toast";
 import { getSessionUserId } from "@/lib/journal-auth";
+import { getRandomAffirmation, AFFIRMATIONS } from "@/lib/affirmations";
+import { GentleWave, WarmGlow } from "@/components/Illustrations";
+
+const LoadingAffirmation = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % AFFIRMATIONS.length), 3000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <p className="text-sm text-muted-foreground/60 italic transition-opacity duration-500">
+      "{AFFIRMATIONS[idx]}"
+    </p>
+  );
+};
 
 const WHERE_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online", "other"];
 const FEELING_OPTIONS = ["confusing", "uncomfortable", "humiliating", "unsafe", "angry", "not sure"];
@@ -199,14 +214,15 @@ const Reflect = () => {
             <p className="text-lg text-foreground font-medium">Taking a moment to understand your experience…</p>
             <p className="text-sm text-muted-foreground">This usually takes a few seconds</p>
           </div>
+          <LoadingAffirmation />
         </div>
       </div>
     );
   }
 
   return (
-    <div id="main-content" className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
-      <div className="max-w-2xl mx-auto space-y-12">
+    <div id="main-content" className="min-h-screen px-6 py-10 relative" style={{ background: "var(--gradient-warm)" }}>
+      <div className="max-w-2xl mx-auto space-y-12 relative z-10">
         <div className="flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
             <ArrowLeft className="w-4 h-4" aria-hidden="true" />
@@ -261,6 +277,11 @@ const Reflect = () => {
             </div>
           </div>
 
+          {/* Gentle wave divider */}
+          <div className="relative -mx-6">
+            <GentleWave className="opacity-60" />
+          </div>
+
           <RevealSection visible={showWhere} onSkip={handleSkipWhere}>
             <PillSelect label="Where did it happen?" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
           </RevealSection>
@@ -278,7 +299,15 @@ const Reflect = () => {
           </RevealSection>
         </div>
 
-        <p className="text-xs text-muted-foreground/60">Your entry is stored anonymously. No account is required. This is not legal or clinical advice.</p>
+        <footer className="space-y-3 pt-4">
+          <p className="text-xs text-muted-foreground/40 italic text-center">"{getRandomAffirmation()}"</p>
+          <p className="text-xs text-muted-foreground/60 text-center">Your entry is stored anonymously. No account is required. This is not legal or clinical advice.</p>
+        </footer>
+      </div>
+
+      {/* Warm glow near textarea */}
+      <div className="absolute top-[200px] right-0 z-0 pointer-events-none opacity-40">
+        <WarmGlow size={180} />
       </div>
     </div>
   );
