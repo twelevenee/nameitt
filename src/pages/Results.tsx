@@ -17,6 +17,7 @@ import { FALLBACK_SCRIPTS } from "@/lib/fallback-scripts";
 import type { Script } from "@/lib/fallback-scripts";
 import { getRandomAffirmation, getValidationAffirmation, AFFIRMATIONS } from "@/lib/affirmations";
 import { WarmBlobs, GentleWave } from "@/components/Illustrations";
+import { getResearchStat } from "@/lib/research-stats";
 
 const LoadingAffirmation = () => {
   const [idx, setIdx] = useState(0);
@@ -277,12 +278,29 @@ const Results = () => {
           },
         }).then(async ({ data }) => {
           if (data?.story && data?.title && data?.primaryPattern) {
-            await supabase.from("stories").insert({
-              experience_id: state.experienceId,
-              title: data.title,
-              story: data.story,
-              primary_pattern: data.primaryPattern,
-            } as any);
+            // Run content safety check
+            let safetyResult = { safe: true, containsSensitiveContent: true, sensitiveContentType: null as string | null };
+            try {
+              const { data: safety } = await supabase.functions.invoke("check-content-safety", {
+                body: { text: data.story },
+              });
+              if (safety) safetyResult = safety;
+            } catch {
+              // If safety check fails, insert with sensitive flag as precaution
+            }
+
+            if (safetyResult.safe) {
+              await supabase.from("stories").insert({
+                experience_id: state.experienceId,
+                title: data.title,
+                story: data.story,
+                primary_pattern: data.primaryPattern,
+                story_type: "user",
+                contains_sensitive_content: safetyResult.containsSensitiveContent,
+                sensitive_content_type: safetyResult.sensitiveContentType,
+              } as any);
+            }
+            // If not safe, silently skip insertion
           }
         }).catch(() => { /* silently fail */ });
       }
@@ -390,6 +408,15 @@ const Results = () => {
                         <PatternCard patternKey={aiMatch.key} title={pattern?.title ?? aiMatch.key}
                           explanation={pattern?.explanation ?? ""} personalizedText={aiMatch.personalizedExplanation}
                           confidence={aiMatch.confidence} examples={pattern?.examples ?? []} actions={pattern?.actions ?? []} />
+                        {(() => {
+                          const rs = getResearchStat(aiMatch.key);
+                          return rs ? (
+                            <p className="text-[11px] text-muted-foreground/60 leading-relaxed pl-1">
+                              {rs.stat} —{" "}
+                              <a href={rs.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">{rs.source}</a>
+                            </p>
+                          ) : null;
+                        })()}
                         {(storyCounts[aiMatch.key] ?? 0) >= 3 && (
                           <Link to={`/stories?pattern=${aiMatch.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
                             {storyCounts[aiMatch.key]} others have shared experiences like this →
@@ -403,6 +430,15 @@ const Results = () => {
                       <PatternCard patternKey={match.pattern.key} title={match.pattern.title}
                         explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
                         confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
+                      {(() => {
+                        const rs = getResearchStat(match.pattern.key);
+                        return rs ? (
+                          <p className="text-[11px] text-muted-foreground/60 leading-relaxed pl-1">
+                            {rs.stat} —{" "}
+                            <a href={rs.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">{rs.source}</a>
+                          </p>
+                        ) : null;
+                      })()}
                       {(storyCounts[match.pattern.key] ?? 0) >= 3 && (
                         <Link to={`/stories?pattern=${match.pattern.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
                           {storyCounts[match.pattern.key]} others have shared experiences like this →
