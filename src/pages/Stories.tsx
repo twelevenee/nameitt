@@ -189,6 +189,7 @@ const Stories = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string | null>(searchParams.get("pattern"));
+  const [contextFilter, setContextFilter] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [showAll, setShowAll] = useState(() => {
@@ -197,7 +198,7 @@ const Stories = () => {
   const [patternCounts, setPatternCounts] = useState<Record<string, number>>({});
   const { toast } = useToast();
 
-  useEffect(() => { document.title = "Stories — Was I Too Sensitive?"; }, []);
+  useEffect(() => { document.title = "Stories — Name It"; }, []);
 
   useEffect(() => {
     const fetchCounts = async () => {
