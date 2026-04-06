@@ -227,7 +227,7 @@ const Reflect = () => {
           aiResult = data as AIAnalysisResult;
         }
       } catch {
-        console.warn("AI analysis failed, falling back to local analysis");
+        // AI analysis failed, falling back to local analysis
       }
 
       const localAnalysis = analyzeExperience(description, where ?? undefined, feelingStr);
