@@ -342,19 +342,8 @@ const HowItWorks = () => {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            {RESOURCES.map((r) => (
-              <a
-                key={r.url}
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                <span className="font-medium">{r.name}</span>
-              </a>
-            ))}
+          <div className="pt-2 max-w-md mx-auto">
+            <CrisisResourceList compact />
           </div>
         </div>
       </section>

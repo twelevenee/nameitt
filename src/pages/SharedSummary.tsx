@@ -144,13 +144,7 @@ const SharedSummary = () => {
 
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground font-medium">Resources</p>
-          {RESOURCES.map((r) => (
-            <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span><span className="font-medium text-foreground/80">{r.name}</span> — {r.desc}</span>
-            </a>
-          ))}
+          <CrisisResourceList compact />
         </div>
 
         <p className="text-xs text-muted-foreground/60 text-center pb-6">
