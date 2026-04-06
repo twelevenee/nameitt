@@ -137,6 +137,70 @@ export type Database = {
         }
         Relationships: []
       }
+      scripts: {
+        Row: {
+          created_at: string
+          experience_id: string
+          id: string
+          safety_note: string | null
+          scripts: Json
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          id?: string
+          safety_note?: string | null
+          scripts: Json
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          id?: string
+          safety_note?: string | null
+          scripts?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scripts_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_summaries: {
+        Row: {
+          created_at: string
+          experience_id: string
+          expires_at: string
+          id: string
+          summary_data: Json
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          expires_at?: string
+          id?: string
+          summary_data: Json
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          expires_at?: string
+          id?: string
+          summary_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_summaries_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_feedback: {
         Row: {
           created_at: string
