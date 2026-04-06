@@ -2,15 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Heart } from "lucide-react";
+import CrisisResourceList from "@/components/CrisisResourceList";
 import { supabase } from "@/integrations/supabase/client";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741" },
-];
+// Resources now come from CrisisResourceList component
 
 interface SummaryData {
   date: string;

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PenLine, Lightbulb, Heart, ArrowLeft, ExternalLink } from "lucide-react";
+import CrisisResourceList from "@/components/CrisisResourceList";
 import { PATTERNS } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { FALLBACK_SCRIPTS } from "@/lib/fallback-scripts";
@@ -10,11 +11,7 @@ import { SEED_STORIES } from "@/lib/seed-stories";
 import { WarmBlobs, FloatingShapes, GentleWave, QuietScene, WarmGlow } from "@/components/Illustrations";
 import { getRandomAffirmation } from "@/lib/affirmations";
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741" },
-];
+// Resources now come from CrisisResourceList component
 
 const sampleStories = [
   SEED_STORIES.find((s) => s.primary_pattern === "emotional_invalidation")!,
