@@ -4,6 +4,7 @@ export interface SeedStory {
   primary_pattern: string;
   secondary_pattern: string | null;
   context: string;
+  feeling: string;
   contains_sensitive_content: boolean;
   sensitive_content_type: string | null;
   story_type: "seed";
