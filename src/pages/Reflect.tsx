@@ -519,7 +519,7 @@ const Reflect = () => {
       if (experienceId) {
         supabase.from("scripts").insert({
           experience_id: experienceId, scripts: data.scripts, safety_note: data.safetyNote ?? null,
-        } as any).catch(() => {});
+        } as any).then(() => {}).catch(() => {});
       }
     } catch {
       setScripts(FALLBACK_SCRIPTS);
