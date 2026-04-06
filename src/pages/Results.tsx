@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink,
+  ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink, BookOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
