@@ -202,14 +202,16 @@ const Stories = () => {
 
   useEffect(() => {
     const fetchCounts = async () => {
-      const { data } = await supabase.from("stories").select("primary_pattern");
+      let query = supabase.from("stories").select("primary_pattern");
+      if (contextFilter) query = query.eq("context", contextFilter);
+      const { data } = await query;
       if (!data) return;
       const counts: Record<string, number> = {};
       for (const row of data) { counts[row.primary_pattern] = (counts[row.primary_pattern] || 0) + 1; }
       setPatternCounts(counts);
     };
     fetchCounts();
-  }, [stories.length]);
+  }, [stories.length, contextFilter]);
 
   const fetchStories = useCallback(async (pageNum: number, patternFilter: string | null, append = false) => {
     setLoading(true);
