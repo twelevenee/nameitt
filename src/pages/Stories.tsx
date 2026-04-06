@@ -129,9 +129,10 @@ const StoryCard = ({ story, onReport }: { story: Story; onReport: (id: string) =
 };
 
 const Stories = () => {
+  const [searchParams] = useSearchParams();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string | null>(searchParams.get("pattern"));
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const { toast } = useToast();
