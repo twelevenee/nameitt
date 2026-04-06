@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Lock, Copy, Check, BookOpen, PenLine,
-  Sun, Sprout, Cloud, CloudRain, Heart, ChevronDown, ExternalLink,
+  Sun, Sprout, Cloud, CloudRain, Heart, ChevronDown, ExternalLink, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -27,7 +27,6 @@ import { getRandomAffirmation } from "@/lib/affirmations";
 import { QuietScene, WarmGlow } from "@/components/Illustrations";
 
 // --- Types ---
-
 interface JournalExperience {
   id: string;
   type: "experience";
@@ -49,7 +48,6 @@ interface JournalCheckin {
 type TimelineItem = JournalExperience | JournalCheckin;
 
 // --- Constants ---
-
 const FEELING_OPTIONS = [
   { label: "Much safer", icon: Sun, color: "hsl(140, 30%, 55%)" },
   { label: "A little better", icon: Sprout, color: "hsl(140, 20%, 65%)" },
@@ -73,7 +71,6 @@ const PILL_ACTIVE = "bg-primary text-primary-foreground";
 const PILL_INACTIVE = "bg-secondary text-muted-foreground hover:bg-secondary/80";
 
 // --- Passphrase Auth Screen ---
-
 const PassphraseScreen = ({ onAuthenticated }: { onAuthenticated: () => void }) => {
   const [mode, setMode] = useState<"choose" | "create" | "enter">("choose");
   const [passphrase, setPassphrase] = useState("");
@@ -167,7 +164,6 @@ const PassphraseScreen = ({ onAuthenticated }: { onAuthenticated: () => void }) 
 };
 
 // --- Check-In Card ---
-
 const CheckInCard = ({ userId, onComplete }: { userId: string; onComplete: () => void }) => {
   const [feeling, setFeeling] = useState<string | null>(null);
   const [note, setNote] = useState("");
@@ -179,19 +175,13 @@ const CheckInCard = ({ userId, onComplete }: { userId: string; onComplete: () =>
     if (!feeling) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from("checkins").insert({
-        journal_user_id: userId,
-        feeling,
-        note: "[not stored for privacy]",
-      });
+      const { error } = await supabase.from("checkins").insert({ journal_user_id: userId, feeling, note: "[not stored for privacy]" });
       if (error) throw error;
       setDone(true);
       onComplete();
     } catch {
       toast({ title: "Could not save check-in.", variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
   if (done) {
@@ -209,12 +199,8 @@ const CheckInCard = ({ userId, onComplete }: { userId: string; onComplete: () =>
         {FEELING_OPTIONS.map((opt) => {
           const Icon = opt.icon;
           return (
-            <button
-              key={opt.label}
-              type="button"
-              onClick={() => setFeeling(opt.label)}
-              className={`${PILL_BASE} ${feeling === opt.label ? PILL_ACTIVE : PILL_INACTIVE}`}
-            >
+            <button key={opt.label} type="button" onClick={() => setFeeling(opt.label)}
+              className={`${PILL_BASE} ${feeling === opt.label ? PILL_ACTIVE : PILL_INACTIVE}`}>
               <Icon className="w-3.5 h-3.5" aria-hidden="true" />
               {opt.label}
             </button>
@@ -223,13 +209,8 @@ const CheckInCard = ({ userId, onComplete }: { userId: string; onComplete: () =>
       </div>
       <div className="space-y-1.5">
         <label htmlFor="checkin-note" className="text-xs text-muted-foreground">Anything you want to note? (optional)</label>
-        <Textarea
-          id="checkin-note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="How things have been…"
-          className="min-h-[60px] text-sm bg-background border-none rounded-xl p-3 resize-none shadow-[var(--shadow-card)]"
-        />
+        <Textarea id="checkin-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="How things have been…"
+          className="min-h-[60px] text-sm bg-background border-none rounded-xl p-3 resize-none shadow-[var(--shadow-card)]" />
       </div>
       <Button onClick={handleSave} disabled={!feeling || saving} className="rounded-full h-10 text-sm">
         {saving ? "Saving…" : "Save check-in"}
@@ -239,7 +220,6 @@ const CheckInCard = ({ userId, onComplete }: { userId: string; onComplete: () =>
 };
 
 // --- Escalation Card ---
-
 const EscalationCard = ({ result }: { result: EscalationResult }) => {
   const [expanded, setExpanded] = useState(false);
   if (result.level === "none") return null;
@@ -253,7 +233,6 @@ const EscalationCard = ({ result }: { result: EscalationResult }) => {
   return (
     <div className={`rounded-2xl ${bgClass} p-5 sm:p-6 space-y-3`}>
       <p className="text-sm text-foreground leading-relaxed">{result.message}</p>
-
       {result.level === "gentle" && (
         <Collapsible open={expanded} onOpenChange={setExpanded}>
           <CollapsibleTrigger asChild>
@@ -268,7 +247,6 @@ const EscalationCard = ({ result }: { result: EscalationResult }) => {
           </CollapsibleContent>
         </Collapsible>
       )}
-
       {result.showResources && (
         <div className="space-y-2 pt-1">
           {result.level === "urgent" && (
@@ -288,10 +266,8 @@ const EscalationCard = ({ result }: { result: EscalationResult }) => {
 };
 
 // --- Wellbeing Chart ---
-
 const WellbeingChart = ({ checkins }: { checkins: JournalCheckin[] }) => {
   if (checkins.length < 3) return null;
-
   const sorted = [...checkins].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
   const data = sorted.map((c) => ({
     date: new Date(c.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
@@ -304,13 +280,8 @@ const WellbeingChart = ({ checkins }: { checkins: JournalCheckin[] }) => {
         <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 10 }}>
           <XAxis dataKey="date" hide />
           <YAxis domain={[1, 5]} hide />
-          <Line
-            type="monotone"
-            dataKey="score"
-            stroke="hsl(230, 30%, 65%)"
-            strokeWidth={2}
-            dot={<Dot r={4} fill="hsl(230, 30%, 65%)" stroke="hsl(230, 30%, 65%)" />}
-          />
+          <Line type="monotone" dataKey="score" stroke="hsl(230, 30%, 65%)" strokeWidth={2}
+            dot={<Dot r={4} fill="hsl(230, 30%, 65%)" stroke="hsl(230, 30%, 65%)" />} />
         </LineChart>
       </ResponsiveContainer>
       <p className="text-xs text-muted-foreground text-center">Your wellbeing over time</p>
@@ -319,27 +290,18 @@ const WellbeingChart = ({ checkins }: { checkins: JournalCheckin[] }) => {
 };
 
 // --- Pattern Summary ---
-
 const PatternSummary = ({ experiences, latestPatterns }: { experiences: JournalExperience[]; latestPatterns: string[] }) => {
   const countMap: Record<string, number> = {};
   for (const exp of experiences) {
-    const patterns = Array.isArray(exp.analyses?.[0]?.detected_patterns)
-      ? (exp.analyses[0].detected_patterns as string[])
-      : [];
-    for (const p of patterns) {
-      countMap[p] = (countMap[p] || 0) + 1;
-    }
+    const patterns = Array.isArray(exp.analyses?.[0]?.detected_patterns) ? (exp.analyses[0].detected_patterns as string[]) : [];
+    for (const p of patterns) { countMap[p] = (countMap[p] || 0) + 1; }
   }
-
   const sorted = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) return null;
 
-  // Determine which patterns are "new" (only in most recent experience)
   const olderPatterns = new Set<string>();
   for (let i = 1; i < experiences.length; i++) {
-    const pats = Array.isArray(experiences[i].analyses?.[0]?.detected_patterns)
-      ? (experiences[i].analyses[0].detected_patterns as string[])
-      : [];
+    const pats = Array.isArray(experiences[i].analyses?.[0]?.detected_patterns) ? (experiences[i].analyses[0].detected_patterns as string[]) : [];
     pats.forEach((p) => olderPatterns.add(p));
   }
 
@@ -364,8 +326,25 @@ const PatternSummary = ({ experiences, latestPatterns }: { experiences: JournalE
   );
 };
 
-// --- Journal Timeline ---
+// --- Contextual Greeting ---
+const JournalGreeting = ({ checkins, experiences }: { checkins: JournalCheckin[]; experiences: JournalExperience[] }) => {
+  const fiveDaysAgo = Date.now() - 5 * 24 * 60 * 60 * 1000;
+  const hasRecentCheckin = checkins.some((c) => new Date(c.created_at).getTime() > fiveDaysAgo);
+  const hasData = experiences.length > 0 || checkins.length > 0;
 
+  let greeting: string;
+  if (hasRecentCheckin) {
+    greeting = "Welcome back. Here's where you left off.";
+  } else if (hasData) {
+    greeting = "Welcome back. How have you been?";
+  } else {
+    greeting = "Your reflections are here whenever you need them.";
+  }
+
+  return <p className="text-muted-foreground text-sm leading-relaxed">{greeting}</p>;
+};
+
+// --- Journal Timeline ---
 const JournalTimeline = () => {
   const [experiences, setExperiences] = useState<JournalExperience[]>([]);
   const [checkins, setCheckins] = useState<JournalCheckin[]>([]);
@@ -400,17 +379,13 @@ const JournalTimeline = () => {
       setExperiences(exps);
       setCheckins(chks);
 
-      // Determine if check-in should show (no check-in in last 5 days)
       const fiveDaysAgo = Date.now() - 5 * 24 * 60 * 60 * 1000;
       const recentCheckin = chks.find((c) => new Date(c.created_at).getTime() > fiveDaysAgo);
       setShowCheckin(!recentCheckin);
 
-      // Run escalation detection
       const escExps = exps.map((e) => ({
         created_at: e.created_at,
-        patterns: Array.isArray(e.analyses?.[0]?.detected_patterns)
-          ? (e.analyses[0].detected_patterns as string[])
-          : [],
+        patterns: Array.isArray(e.analyses?.[0]?.detected_patterns) ? (e.analyses[0].detected_patterns as string[]) : [],
       }));
       const escCheckins = chks.map((c) => ({ created_at: c.created_at, feeling: c.feeling }));
       setEscalation(detectEscalation(escExps, escCheckins));
@@ -425,7 +400,6 @@ const JournalTimeline = () => {
 
   const handleLock = () => { clearSession(); navigate("/"); };
 
-  // Interleave timeline items
   const timeline: TimelineItem[] = [
     ...experiences,
     ...checkins,
@@ -449,6 +423,7 @@ const JournalTimeline = () => {
 
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-4xl text-foreground tracking-tight">My Journal</h1>
+          {!loading && <JournalGreeting checkins={checkins} experiences={experiences} />}
           <p className="text-muted-foreground text-sm italic">"{getRandomAffirmation()}"</p>
         </div>
 
@@ -456,7 +431,6 @@ const JournalTimeline = () => {
           <p className="text-muted-foreground text-center py-16" role="status">Loading your reflections…</p>
         ) : (
           <>
-            {/* Check-in prompt with warm glow */}
             {showCheckin && userId && (
               <div className="relative">
                 <div className="absolute -top-6 -right-6 z-0 pointer-events-none opacity-50">
@@ -468,21 +442,13 @@ const JournalTimeline = () => {
               </div>
             )}
 
-            {/* Escalation message */}
             {escalation && escalation.level !== "none" && <EscalationCard result={escalation} />}
-
-            {/* Wellbeing chart */}
             <WellbeingChart checkins={checkins} />
-
-            {/* Pattern summary */}
             {experiences.length > 0 && <PatternSummary experiences={experiences} latestPatterns={latestPatterns} />}
 
-            {/* Timeline */}
             {timeline.length === 0 ? (
               <div className="rounded-2xl bg-card p-8 text-center space-y-6 shadow-[var(--shadow-soft)]">
-                <div className="flex justify-center">
-                  <QuietScene className="w-48 h-36 opacity-60" />
-                </div>
+                <div className="flex justify-center"><QuietScene className="w-48 h-36 opacity-60" /></div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   This is your space. Nothing here yet, and that's perfectly okay. When you're ready to reflect, your thoughts will live here.
                 </p>
@@ -502,7 +468,6 @@ const JournalTimeline = () => {
                       const date = new Date(checkin.created_at);
                       const color = FEELING_COLOR_MAP[checkin.feeling] ?? "hsl(35, 20%, 60%)";
                       const FeelingIcon = FEELING_OPTIONS.find((f) => f.label === checkin.feeling)?.icon ?? Cloud;
-
                       return (
                         <div key={checkin.id} className="relative pl-10">
                           <div className="absolute left-2.5 top-3.5 w-3 h-3 rounded-full border-2 border-background" style={{ backgroundColor: color }} aria-hidden="true" />
@@ -510,23 +475,16 @@ const JournalTimeline = () => {
                             <FeelingIcon className="w-4 h-4 text-muted-foreground shrink-0" aria-hidden="true" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm text-foreground">{checkin.feeling}</p>
-                              <p className="text-[11px] text-muted-foreground">
-                                {date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                              </p>
+                              <p className="text-[11px] text-muted-foreground">{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
                             </div>
                           </div>
                         </div>
                       );
                     }
-
-                    // Experience entry
                     const entry = item as JournalExperience;
                     const analysis = entry.analyses?.[0];
-                    const patterns = Array.isArray(analysis?.detected_patterns)
-                      ? (analysis.detected_patterns as string[])
-                      : [];
+                    const patterns = Array.isArray(analysis?.detected_patterns) ? (analysis.detected_patterns as string[]) : [];
                     const date = new Date(entry.created_at);
-
                     return (
                       <div key={entry.id} className="relative pl-10">
                         <div className="absolute left-2.5 top-5 w-3 h-3 rounded-full bg-primary/40 border-2 border-background" aria-hidden="true" />
@@ -585,6 +543,14 @@ const JournalTimeline = () => {
                 </div>
               </div>
             )}
+
+            {/* Link to Patterns */}
+            <div className="text-center pt-4">
+              <Link to="/patterns" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                <BarChart3 className="w-3.5 h-3.5" aria-hidden="true" />
+                Explore patterns across all reflections
+              </Link>
+            </div>
           </>
         )}
       </div>
@@ -593,7 +559,6 @@ const JournalTimeline = () => {
 };
 
 // --- Main Component ---
-
 const Journal = () => {
   const [authenticated, setAuthenticated] = useState(!!getSessionUserId());
   if (!authenticated) return <PassphraseScreen onAuthenticated={() => setAuthenticated(true)} />;
