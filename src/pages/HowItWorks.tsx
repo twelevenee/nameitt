@@ -53,13 +53,13 @@ const HowItWorks = () => {
             Home
           </Link>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl text-foreground tracking-tight leading-tight">
-            A space to understand what happened to you
-          </h1>
-
-          <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Name It is a reflective tool that helps you make sense of uncomfortable experiences — especially those involving gender-based discrimination or violence. It won't tell you what to think. It will help you find the words.
+          <p className="text-base text-muted-foreground">
+            Curious about how it works? Here's everything, step by step.
           </p>
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl text-foreground tracking-tight leading-tight">
+            Here's what happens when you reflect.
+          </h1>
 
           {/* Flow diagram */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-6">
