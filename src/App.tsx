@@ -12,6 +12,7 @@ import Journal from "./pages/Journal";
 import Stories from "./pages/Stories";
 import SharedSummary from "./pages/SharedSummary";
 import NotFound from "./pages/NotFound";
+import AdminSeed from "./pages/AdminSeed";
 import Companion from "./components/Companion";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/my-journal" element={<Journal />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/shared/:id" element={<SharedSummary />} />
+            <Route path="/admin/seed" element={<AdminSeed />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </PageTransition>
