@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink, BookOpen,
-  Copy, Check, Shield, Share2, Link as LinkIcon,
+  Copy, Check, Shield, Share2, Link as LinkIcon, BookText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -152,6 +152,9 @@ const Results = () => {
   const [shareLoading, setShareLoading] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
+  // Story counts per pattern
+  const [storyCounts, setStoryCounts] = useState<Record<string, number>>({});
+
   const { toast } = useToast();
 
   const ai = state?.aiResult;
@@ -185,6 +188,26 @@ const Results = () => {
     };
     fetchCommunityCount();
   }, [topPatternKey, topPatternTitle]);
+
+  // Fetch story counts per pattern
+  useEffect(() => {
+    if (patternKeys.length === 0) return;
+    const fetchStoryCounts = async () => {
+      try {
+        const { data } = await supabase
+          .from("stories")
+          .select("primary_pattern")
+          .in("primary_pattern", patternKeys);
+        if (!data) return;
+        const counts: Record<string, number> = {};
+        for (const row of data) {
+          counts[row.primary_pattern] = (counts[row.primary_pattern] || 0) + 1;
+        }
+        setStoryCounts(counts);
+      } catch {}
+    };
+    fetchStoryCounts();
+  }, [patternKeys.join(",")]);
 
   if (!state) return <Navigate to="/reflect" replace />;
 
