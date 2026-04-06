@@ -10,6 +10,8 @@ export interface Pattern {
   whyRelates: string;
   keywords: WeightedKeyword[];
   contextBoost?: string[];
+  examples: string[];
+  actions: string[];
 }
 
 export type Confidence = "high" | "medium" | "low";
@@ -53,13 +55,10 @@ export const PATTERNS: Pattern[] = [
     explanation: "When someone dismisses, minimizes, or ignores your feelings — making you question whether your emotional response is justified.",
     whyRelates: "Your description may reflect a situation where your feelings were treated as an overreaction or dismissed entirely.",
     keywords: [
-      // generic
       kw("emotional", 0.5), kw("dramatic", 0.5), kw("relax", 0.5), kw("chill", 0.5),
-      // moderate
       kw("overreacting"), kw("too sensitive"), kw("calm down"), kw("hysterical"),
       kw("irrational"), kw("crazy"), kw("making a big deal"), kw("lighten up"),
       kw("can't take a joke"),
-      // specific multi-word
       kw("talked over me", 2.0), kw("rolled their eyes", 2.0),
       kw("told me to calm down", 2.0), kw("said I was making it up", 2.0),
       kw("laughed at me", 2.0), kw("dismissed what I said", 2.0),
@@ -70,6 +69,17 @@ export const PATTERNS: Pattern[] = [
       kw("it's not a big deal", 1.5), kw("you're blowing this out of proportion", 2.0),
     ],
     contextBoost: [],
+    examples: [
+      "He said I was overreacting when I brought up how his comment hurt me.",
+      "My coworker laughed and told me it wasn't that deep.",
+      "She said I was being too emotional to think clearly.",
+      "They rolled their eyes when I tried to explain how I felt.",
+    ],
+    actions: [
+      "Write down what happened and how you felt — your experience is valid even if someone dismissed it.",
+      "Practice saying: 'I hear that you see it differently, but my feelings are real.'",
+      "Talk to someone you trust about what happened.",
+    ],
   },
   {
     key: "benevolent_sexism",
@@ -90,6 +100,17 @@ export const PATTERNS: Pattern[] = [
       kw("women are better at", 1.5), kw("it's a compliment", 2.0),
     ],
     contextBoost: ["workplace", "relationship"],
+    examples: [
+      "My manager said I shouldn't worry about the technical side — he'd handle it for me.",
+      "He told me I was too pretty to be working this hard.",
+      "A colleague insisted on carrying my things even after I said I was fine.",
+      "He said he was just being protective when he told me not to walk alone.",
+    ],
+    actions: [
+      "Notice when 'kindness' comes with an assumption about what you can or can't do.",
+      "Try responding with: 'I appreciate the thought, but I've got this.'",
+      "Reflect on whether the same offer would be made to a male colleague.",
+    ],
   },
   {
     key: "gender_role_expectation",
@@ -111,6 +132,17 @@ export const PATTERNS: Pattern[] = [
       kw("boys will be boys", 2.0), kw("man up", 1.5),
     ],
     contextBoost: ["family", "relationship", "workplace"],
+    examples: [
+      "My family kept asking when I was going to settle down and have kids.",
+      "A coworker called me 'bossy' for doing the same thing our male lead does daily.",
+      "I was told I'd be prettier if I smiled more.",
+      "My partner expected me to handle all the cooking and cleaning.",
+    ],
+    actions: [
+      "Remind yourself: your worth is not defined by how well you fit someone else's expectations.",
+      "Practice setting a boundary: 'That's a personal choice, and I'm comfortable with mine.'",
+      "Seek out communities or role models who embrace diverse ways of being.",
+    ],
   },
   {
     key: "objectification",
@@ -131,6 +163,17 @@ export const PATTERNS: Pattern[] = [
       kw("showing off your", 2.0), kw("too revealing", 1.5),
     ],
     contextBoost: ["public space", "workplace", "online"],
+    examples: [
+      "He commented on my outfit instead of the presentation I just gave.",
+      "A stranger rated my appearance out loud as I walked past.",
+      "My colleague said I was 'easy on the eyes' during a work meeting.",
+      "Someone whistled at me from across the street.",
+    ],
+    actions: [
+      "Remember: you are more than how you look, and unwanted comments about your body are not compliments.",
+      "If safe, name the behavior: 'I'd prefer you comment on my work, not my appearance.'",
+      "Document incidents if they happen at work — a pattern matters.",
+    ],
   },
   {
     key: "harassment",
@@ -152,6 +195,17 @@ export const PATTERNS: Pattern[] = [
       kw("grabbed my", 2.0), kw("waited for me outside", 2.0),
     ],
     contextBoost: ["workplace", "public space", "online"],
+    examples: [
+      "He kept asking me out even after I said no multiple times.",
+      "A coworker would stand too close and brush against me when no one was looking.",
+      "Someone kept sending me messages even after I blocked them.",
+      "He cornered me in the hallway and wouldn't let me pass.",
+    ],
+    actions: [
+      "Trust your instincts — if it felt wrong, it matters.",
+      "Save any messages or evidence. Documentation can help you later.",
+      "Reach out to a trusted person or a helpline — you don't have to handle this alone.",
+    ],
   },
   {
     key: "public_intimidation",
@@ -173,6 +227,17 @@ export const PATTERNS: Pattern[] = [
       kw("stepped into my space", 2.0),
     ],
     contextBoost: ["public space"],
+    examples: [
+      "A man followed me for two blocks making comments about my body.",
+      "Someone honked and yelled at me from their car while I was walking home.",
+      "A stranger blocked my path and wouldn't let me pass until I 'smiled for him.'",
+      "I noticed someone taking photos of me without my consent on the train.",
+    ],
+    actions: [
+      "Your safety comes first — change your route, enter a store, or call someone if you feel unsafe.",
+      "It's okay to be rude to protect yourself. You don't owe anyone a smile or a conversation.",
+      "Share your experience with others — public intimidation thrives on silence.",
+    ],
   },
   {
     key: "safety_threat",
@@ -194,6 +259,17 @@ export const PATTERNS: Pattern[] = [
       kw("I couldn't get out", 2.0), kw("made me feel trapped", 2.0),
     ],
     contextBoost: ["relationship", "public space"],
+    examples: [
+      "He punched the wall next to me when I disagreed with him.",
+      "She took my phone so I couldn't call anyone.",
+      "I felt trapped because he was blocking the only exit.",
+      "He said no one would believe me if I told anyone.",
+    ],
+    actions: [
+      "If you are in immediate danger, call emergency services or a crisis hotline.",
+      "Create a safety plan — identify trusted people, safe places, and ways to leave.",
+      "You deserve to feel safe. Reaching out for support is a sign of strength, not weakness.",
+    ],
   },
 ];
 
