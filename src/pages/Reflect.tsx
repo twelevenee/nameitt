@@ -61,7 +61,7 @@ type Step =
   | "thanks" | "ask-where" | "wait-where"
   | "ask-feelings" | "wait-feelings"
   | "ask-doubt" | "wait-doubt"
-  | "safety-check"
+  | "safety-check" | "ask-doubt-intro"
   | "analyzing" | "analyzing-done"
   | "show-validation" | "show-doubt-note"
   | "show-patterns-intro" | "show-patterns"
