@@ -51,7 +51,7 @@ const PatternCard = ({
   const conf = CONFIDENCE_LABELS[confidence] ?? CONFIDENCE_LABELS.low;
 
   return (
-    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
       <CardContent className="p-5 space-y-3">
         <div className="flex items-center gap-3 text-primary">
           {PATTERN_ICONS[patternKey]}
