@@ -1,10 +1,15 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, BarChart3 } from "lucide-react";
 
 const Landing = () => {
+  useEffect(() => {
+    document.title = "Was I Too Sensitive? — A Reflective Tool";
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--gradient-warm)" }}>
+    <div id="main-content" className="min-h-screen flex flex-col" style={{ background: "var(--gradient-warm)" }}>
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="max-w-2xl text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm">
