@@ -8,6 +8,7 @@ import Reflect from "./pages/Reflect";
 import Results from "./pages/Results";
 import Patterns from "./pages/Patterns";
 import Journal from "./pages/Journal";
+import Stories from "./pages/Stories";
 import SharedSummary from "./pages/SharedSummary";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/results" element={<Results />} />
           <Route path="/patterns" element={<Patterns />} />
           <Route path="/my-journal" element={<Journal />} />
+          <Route path="/stories" element={<Stories />} />
           <Route path="/shared/:id" element={<SharedSummary />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

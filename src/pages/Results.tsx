@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, RefreshCw, ChevronDown, Sparkles, ExternalLink, BookOpen,
-  Copy, Check, Shield, Share2, Link as LinkIcon,
+  Copy, Check, Shield, Share2, Link as LinkIcon, BookText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -152,6 +152,9 @@ const Results = () => {
   const [shareLoading, setShareLoading] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
+  // Story counts per pattern
+  const [storyCounts, setStoryCounts] = useState<Record<string, number>>({});
+
   const { toast } = useToast();
 
   const ai = state?.aiResult;
@@ -185,6 +188,26 @@ const Results = () => {
     };
     fetchCommunityCount();
   }, [topPatternKey, topPatternTitle]);
+
+  // Fetch story counts per pattern
+  useEffect(() => {
+    if (patternKeys.length === 0) return;
+    const fetchStoryCounts = async () => {
+      try {
+        const { data } = await supabase
+          .from("stories")
+          .select("primary_pattern")
+          .in("primary_pattern", patternKeys);
+        if (!data) return;
+        const counts: Record<string, number> = {};
+        for (const row of data) {
+          counts[row.primary_pattern] = (counts[row.primary_pattern] || 0) + 1;
+        }
+        setStoryCounts(counts);
+      } catch {}
+    };
+    fetchStoryCounts();
+  }, [patternKeys.join(",")]);
 
   if (!state) return <Navigate to="/reflect" replace />;
 
@@ -227,6 +250,26 @@ const Results = () => {
       }
       if (contribute === true) {
         await supabase.from("experiences").update({ contributed: true }).eq("id", state.experienceId);
+
+        // Generate story in background — fire and forget
+        supabase.functions.invoke("generate-story", {
+          body: {
+            patternKeys,
+            context: state.contextWhere,
+            feeling: state.contextFeeling,
+            selfDoubtDetected: state.selfDoubtDetected,
+            validationMessage: ai?.validationMessage,
+          },
+        }).then(async ({ data }) => {
+          if (data?.story && data?.title && data?.primaryPattern) {
+            await supabase.from("stories").insert({
+              experience_id: state.experienceId,
+              title: data.title,
+              story: data.story,
+              primary_pattern: data.primaryPattern,
+            } as any);
+          }
+        }).catch(() => { /* silently fail */ });
       }
       setSubmitted(true);
       toast({ title: "Thank you for reflecting." });
@@ -318,21 +361,37 @@ const Results = () => {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {useAI
-              ? ai.patterns.map((aiMatch) => {
-                  const pattern = getPatternByKey(aiMatch.key);
-                  return (
-                    <PatternCard key={aiMatch.key} patternKey={aiMatch.key} title={pattern?.title ?? aiMatch.key}
-                      explanation={pattern?.explanation ?? ""} personalizedText={aiMatch.personalizedExplanation}
-                      confidence={aiMatch.confidence} examples={pattern?.examples ?? []} actions={pattern?.actions ?? []} />
-                  );
-                })
-              : state.matches.map((match) => (
-                  <PatternCard key={match.pattern.key} patternKey={match.pattern.key} title={match.pattern.title}
-                    explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
-                    confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
-                ))}
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {useAI
+                ? ai.patterns.map((aiMatch) => {
+                    const pattern = getPatternByKey(aiMatch.key);
+                    return (
+                      <div key={aiMatch.key} className="space-y-1.5">
+                        <PatternCard patternKey={aiMatch.key} title={pattern?.title ?? aiMatch.key}
+                          explanation={pattern?.explanation ?? ""} personalizedText={aiMatch.personalizedExplanation}
+                          confidence={aiMatch.confidence} examples={pattern?.examples ?? []} actions={pattern?.actions ?? []} />
+                        {(storyCounts[aiMatch.key] ?? 0) >= 3 && (
+                          <Link to={`/stories?pattern=${aiMatch.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
+                            {storyCounts[aiMatch.key]} others have shared experiences like this →
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })
+                : state.matches.map((match) => (
+                    <div key={match.pattern.key} className="space-y-1.5">
+                      <PatternCard patternKey={match.pattern.key} title={match.pattern.title}
+                        explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
+                        confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
+                      {(storyCounts[match.pattern.key] ?? 0) >= 3 && (
+                        <Link to={`/stories?pattern=${match.pattern.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
+                          {storyCounts[match.pattern.key]} others have shared experiences like this →
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+            </div>
           </div>
         )}
 
@@ -469,6 +528,10 @@ const Results = () => {
                   Want to keep track of your reflections over time? Create a private journal.
                 </p>
               )}
+              <Link to="/stories" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors">
+                <BookText className="w-3.5 h-3.5" aria-hidden="true" />
+                Read how others have navigated similar experiences
+              </Link>
             </div>
 
             {/* Share with someone you trust */}

@@ -201,6 +201,50 @@ export type Database = {
           },
         ]
       }
+      stories: {
+        Row: {
+          created_at: string
+          experience_id: string
+          featured: boolean
+          id: string
+          primary_pattern: string
+          reported: boolean
+          resonates: number
+          story: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          featured?: boolean
+          id?: string
+          primary_pattern: string
+          reported?: boolean
+          resonates?: number
+          story: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          featured?: boolean
+          id?: string
+          primary_pattern?: string
+          reported?: boolean
+          resonates?: number
+          story?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stories_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_feedback: {
         Row: {
           created_at: string
@@ -235,7 +279,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_resonates: { Args: { story_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
