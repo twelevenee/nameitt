@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Heart } from "lucide-react";
+import { ArrowLeft, Send, Heart, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
@@ -18,6 +18,8 @@ const EXAMPLE_PROMPTS = [
   "I was told I was overreacting, but something about the situation didn't feel right",
   "Someone did something that seemed nice on the surface, but it left me feeling uncomfortable",
 ];
+
+const REDACTED_PLACEHOLDER = "[experience analyzed — raw text not stored for privacy]";
 
 const PillSelect = ({
   label,
@@ -136,7 +138,6 @@ const Reflect = () => {
 
   const charCount = description.trim().length;
 
-  // Progressive reveal logic
   useEffect(() => {
     if (charCount >= 20 && !showWhere) setShowWhere(true);
   }, [charCount, showWhere]);
@@ -153,15 +154,9 @@ const Reflect = () => {
     if (doubt !== null && !showSubmit) setShowSubmit(true);
   }, [doubt, showSubmit]);
 
-  const handleSkipWhere = () => {
-    setShowFeelings(true);
-  };
-  const handleSkipFeelings = () => {
-    setShowDoubt(true);
-  };
-  const handleSkipDoubt = () => {
-    setShowSubmit(true);
-  };
+  const handleSkipWhere = () => setShowFeelings(true);
+  const handleSkipFeelings = () => setShowDoubt(true);
+  const handleSkipDoubt = () => setShowSubmit(true);
 
   const encouragementText = charCount >= 100
     ? "Thank you for sharing. Add as much or as little detail as you'd like."
@@ -191,7 +186,17 @@ const Reflect = () => {
             selfDoubt: doubt,
           },
         });
-        if (!error && data && data.patterns) {
+
+        if (error) {
+          // Check for rate limiting
+          const status = (error as any)?.status ?? (error as any)?.context?.status;
+          if (status === 429) {
+            toast({
+              title: "This tool is receiving a lot of reflections right now. Please try again in a moment.",
+            });
+          }
+          // Fall through to local analysis
+        } else if (data && data.patterns) {
           aiResult = data as AIAnalysisResult;
         }
       } catch {
@@ -201,12 +206,12 @@ const Reflect = () => {
       // Fallback to local analysis
       const localAnalysis = analyzeExperience(description, where ?? undefined, feelingStr);
 
-      // Store experience
+      // Store experience — redact raw description for privacy
       const { error: expErr } = await supabase
         .from("experiences")
         .insert({
           id: experienceId,
-          description: description.trim(),
+          description: REDACTED_PLACEHOLDER,
           context_where: where,
           context_feeling: feelings.length > 0 ? feelings.join(", ") : null,
           self_doubt: doubt,
@@ -300,7 +305,7 @@ const Reflect = () => {
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Textarea
               placeholder="Tell us what happened…"
               value={description}
@@ -313,6 +318,14 @@ const Reflect = () => {
                 {encouragementText}
               </p>
             )}
+
+            {/* Privacy notice */}
+            <div className="flex items-start gap-2.5 rounded-xl bg-accent/40 border border-border/30 px-4 py-3">
+              <Shield className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <span className="font-medium text-foreground/70">Your privacy matters.</span> The text you write here is used to identify patterns but is not permanently stored. Only your anonymous selections (where, how it felt, self-doubt) are saved.
+              </p>
+            </div>
           </div>
 
           <RevealSection visible={showWhere} onSkip={handleSkipWhere}>

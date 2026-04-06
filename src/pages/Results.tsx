@@ -335,6 +335,9 @@ const Results = () => {
                   </button>
                 ))}
               </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Contributing means your anonymous pattern results and context selections (not your written description) will be included in aggregate statistics on the Patterns page.
+              </p>
             </div>
 
             <Button
