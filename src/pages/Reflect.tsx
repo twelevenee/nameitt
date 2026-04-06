@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, KeyboardEvent } from "react";
+import { useState, useEffect, useCallback, useMemo, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Heart, Shield } from "lucide-react";
+import { ArrowLeft, Send, Heart, Shield, ShieldAlert, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
@@ -112,12 +112,20 @@ const RevealSection = ({ visible, children, onSkip }: { visible: boolean; childr
   </div>
 );
 
+const SAFETY_PHRASES = [
+  "can't leave", "afraid to go home", "he'll hurt", "she'll hurt",
+  "threatened to", "scared for my life", "locked me", "won't let me leave",
+];
+
+const SAFETY_DISMISSED_KEY = "safety_interstitial_dismissed";
+
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
   const [feelings, setFeelings] = useState<string[]>([]);
   const [doubt, setDoubt] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [safetyDismissed, setSafetyDismissed] = useState(() => sessionStorage.getItem(SAFETY_DISMISSED_KEY) === "true");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -130,7 +138,22 @@ const Reflect = () => {
   const MAX_CHARS = 2000;
   const overLimit = charCount > MAX_CHARS;
 
-  useEffect(() => { document.title = "Share Your Experience — Was I Too Sensitive?"; }, []);
+  const shouldShowSafety = useMemo(() => {
+    if (safetyDismissed) return false;
+    const feelsUnsafe = feelings.includes("unsafe");
+    if (!feelsUnsafe) return false;
+    const doubted = doubt === "yes";
+    const textLower = description.toLowerCase();
+    const hasTriggerPhrase = SAFETY_PHRASES.some((p) => textLower.includes(p));
+    return doubted || hasTriggerPhrase;
+  }, [feelings, doubt, description, safetyDismissed]);
+
+  const handleDismissSafety = () => {
+    setSafetyDismissed(true);
+    sessionStorage.setItem(SAFETY_DISMISSED_KEY, "true");
+  };
+
+  useEffect(() => { document.title = "Share Your Experience — Name It"; }, []);
   useEffect(() => { if (charCount >= 20 && !showWhere) setShowWhere(true); }, [charCount, showWhere]);
   useEffect(() => { if (where !== null && !showFeelings) setShowFeelings(true); }, [where, showFeelings]);
   useEffect(() => { if (feelings.length > 0 && !showDoubt) setShowDoubt(true); }, [feelings, showDoubt]);
@@ -286,7 +309,54 @@ const Reflect = () => {
           <RevealSection visible={showDoubt} onSkip={handleSkipDoubt}>
             <PillSelect label="Did you doubt yourself?" options={DOUBT_OPTIONS} value={doubt} onChange={setDoubt} />
           </RevealSection>
-          <RevealSection visible={showSubmit}>
+
+          {/* Safety interstitial */}
+          <RevealSection visible={shouldShowSafety}>
+            <div className="rounded-2xl p-6 space-y-4" style={{ background: "hsl(15 40% 95%)" }}>
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="space-y-3">
+                  <p className="text-base font-medium text-foreground">Before we continue — are you safe right now?</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Your safety is the most important thing. If you're in danger or need immediate help, these resources are available 24/7.
+                  </p>
+                  <div className="space-y-2 pl-1">
+                    <p className="text-sm text-foreground">
+                      <span className="font-medium">National Domestic Violence Hotline:</span>{" "}
+                      <a href="tel:1-800-799-7233" className="underline">1-800-799-7233</a>{" "}
+                      <span className="text-muted-foreground">(</span>
+                      <a href="https://thehotline.org" target="_blank" rel="noopener noreferrer" className="underline text-muted-foreground hover:text-foreground transition-colors">thehotline.org</a>
+                      <span className="text-muted-foreground">)</span>
+                    </p>
+                    <p className="text-sm text-foreground">
+                      <span className="font-medium">Crisis Text Line:</span>{" "}
+                      Text HOME to 741741
+                    </p>
+                    <p className="text-sm text-foreground">
+                      <span className="font-medium">Emergency:</span>{" "}
+                      Call 911
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start gap-3 pt-2">
+                    <Button asChild variant="secondary" size="sm" className="rounded-full gap-1.5">
+                      <a href="https://thehotline.org" target="_blank" rel="noopener noreferrer">
+                        I need help now <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                      </a>
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={handleDismissSafety}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                    >
+                      I'm reflecting on a past experience — continue
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
+
+          <RevealSection visible={showSubmit && !shouldShowSafety}>
             <Button onClick={handleSubmit} disabled={!description.trim() || overLimit} size="lg" className="rounded-full px-8 h-12 text-base w-full sm:w-auto">
               <Send className="w-4 h-4" aria-hidden="true" />Reflect
             </Button>
