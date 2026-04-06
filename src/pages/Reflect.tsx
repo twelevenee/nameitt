@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, KeyboardEvent } from "react";
+import { useState, useEffect, useCallback, useMemo, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Heart, Shield } from "lucide-react";
+import { ArrowLeft, Send, Heart, Shield, ShieldAlert, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
