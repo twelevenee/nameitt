@@ -12,13 +12,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const CHART_COLORS = [
-  "hsl(320, 25%, 45%)",
-  "hsl(270, 20%, 55%)",
-  "hsl(280, 15%, 65%)",
-  "hsl(30, 25%, 60%)",
-  "hsl(320, 20%, 60%)",
-  "hsl(270, 15%, 50%)",
-  "hsl(280, 10%, 70%)",
+  "hsl(230, 30%, 65%)",
+  "hsl(230, 25%, 72%)",
+  "hsl(230, 20%, 78%)",
+  "hsl(230, 30%, 58%)",
+  "hsl(230, 25%, 68%)",
+  "hsl(230, 20%, 75%)",
+  "hsl(230, 15%, 80%)",
 ];
 
 interface Stats {
@@ -51,22 +51,20 @@ const EducationalCard = ({
   const percent = totalExperiences > 0 ? Math.round((reportedCount / totalExperiences) * 100) : 0;
 
   return (
-    <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
+    <div className="rounded-2xl bg-card shadow-[var(--shadow-soft)]">
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
-          <button className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl" aria-expanded={open}>
-            <CardContent className="p-4 sm:p-5 flex items-center gap-3">
-              <span className="text-primary shrink-0">{PATTERN_ICONS[patternKey]}</span>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground font-sans text-sm sm:text-base">{title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1 line-clamp-2 break-words">{explanation}</p>
-              </div>
-              <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
-            </CardContent>
+          <button className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-2xl p-5 sm:p-6 flex items-center gap-3" aria-expanded={open}>
+            <span className="text-muted-foreground shrink-0">{PATTERN_ICONS[patternKey]}</span>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-foreground text-sm sm:text-base">{title}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1 line-clamp-2 break-words">{explanation}</p>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} aria-hidden="true" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
+          <div className="px-5 sm:px-6 pb-5 sm:pb-6 space-y-4">
             {examples.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">What this can look like</p>
@@ -95,7 +93,7 @@ const EducationalCard = ({
           </div>
         </CollapsibleContent>
       </Collapsible>
-    </Card>
+    </div>
   );
 };
 
@@ -107,7 +105,7 @@ const MobileBarChart = ({ data, maxCount }: { data: { name: string; count: numbe
           <span className="text-xs text-muted-foreground truncate max-w-[70%]">{item.name}</span>
           <span className="text-xs font-medium text-foreground">{item.count}</span>
         </div>
-        <div className="h-2 rounded-full bg-muted overflow-hidden">
+        <div className="h-2 rounded-full bg-secondary overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -202,15 +200,15 @@ const Patterns = () => {
 
   return (
     <div id="main-content" className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
-      <div className="max-w-3xl mx-auto space-y-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded">
-          <ArrowLeft className="w-4 h-4" />
+      <div className="max-w-3xl mx-auto space-y-12">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" />
           Back
         </Link>
 
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl text-foreground">Anonymous Patterns</h1>
-          <p className="text-muted-foreground">
+        <div className="space-y-3">
+          <h1 className="text-3xl sm:text-4xl text-foreground tracking-tight">Anonymous Patterns</h1>
+          <p className="text-muted-foreground leading-relaxed">
             Based on anonymous, voluntarily shared experiences. No personal details are displayed.
           </p>
         </div>
@@ -223,8 +221,8 @@ const Patterns = () => {
           <p className="text-muted-foreground text-center py-20" role="status">Loading patterns…</p>
         ) : (
           <>
-            <div className="space-y-4">
-              <h2 className="text-2xl text-foreground">Understanding the Patterns</h2>
+            <div className="space-y-6">
+              <h2 className="text-2xl text-foreground tracking-tight">Understanding the Patterns</h2>
               <div className="space-y-3">
                 {PATTERNS.map((pattern) => (
                   <EducationalCard
@@ -241,17 +239,17 @@ const Patterns = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h2 className="text-2xl text-foreground">What People Are Sharing</h2>
+            <div className="space-y-6">
+              <h2 className="text-2xl text-foreground tracking-tight">What People Are Sharing</h2>
 
               {!hasData ? (
-                <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/40 p-6 sm:p-8 text-center space-y-4">
+                <div className="rounded-2xl bg-card p-8 text-center space-y-4 shadow-[var(--shadow-soft)]">
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
                     As more people choose to share their anonymous reflections, patterns will appear here. Every contribution helps others feel less alone.
                   </p>
                   <Button asChild className="rounded-full">
                     <Link to="/reflect" className="inline-flex items-center gap-2">
-                      <Send className="w-4 h-4" />
+                      <Send className="w-4 h-4" aria-hidden="true" />
                       Share your reflection
                     </Link>
                   </Button>
@@ -259,72 +257,64 @@ const Patterns = () => {
               ) : (
                 <>
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-                    <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-4 sm:p-5 space-y-2">
-                        <div className="flex items-center gap-2 text-primary">
-                          <TrendingUp className="w-4 h-4" />
-                          <span className="text-xs font-medium uppercase tracking-wide">Most Common Pattern</span>
-                        </div>
-                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans">{stats!.topPattern}</p>
-                      </CardContent>
-                    </Card>
+                    <div className="rounded-2xl bg-card p-5 sm:p-6 space-y-2 shadow-[var(--shadow-soft)]">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <TrendingUp className="w-4 h-4" aria-hidden="true" />
+                        <span className="text-xs font-medium uppercase tracking-wide">Most Common Pattern</span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-semibold text-foreground">{stats!.topPattern}</p>
+                    </div>
 
-                    <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-4 sm:p-5 space-y-2">
-                        <div className="flex items-center gap-2 text-primary">
-                          <Brain className="w-4 h-4" />
-                          <span className="text-xs font-medium uppercase tracking-wide">Self-Doubt Detected</span>
-                        </div>
-                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans">{stats!.selfDoubtPercent}%</p>
-                        <p className="text-xs text-muted-foreground">of shared experiences</p>
-                      </CardContent>
-                    </Card>
+                    <div className="rounded-2xl bg-card p-5 sm:p-6 space-y-2 shadow-[var(--shadow-soft)]">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Brain className="w-4 h-4" aria-hidden="true" />
+                        <span className="text-xs font-medium uppercase tracking-wide">Self-Doubt Detected</span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-semibold text-foreground">{stats!.selfDoubtPercent}%</p>
+                      <p className="text-xs text-muted-foreground">of shared experiences</p>
+                    </div>
 
-                    <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-4 sm:p-5 space-y-2">
-                        <div className="flex items-center gap-2 text-primary">
-                          <MapPin className="w-4 h-4" />
-                          <span className="text-xs font-medium uppercase tracking-wide">Most Common Context</span>
-                        </div>
-                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans capitalize">{stats!.topContext}</p>
-                      </CardContent>
-                    </Card>
+                    <div className="rounded-2xl bg-card p-5 sm:p-6 space-y-2 shadow-[var(--shadow-soft)]">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="w-4 h-4" aria-hidden="true" />
+                        <span className="text-xs font-medium uppercase tracking-wide">Most Common Context</span>
+                      </div>
+                      <p className="text-lg sm:text-xl font-semibold text-foreground capitalize">{stats!.topContext}</p>
+                    </div>
                   </div>
 
                   {showChart && stats!.patternCounts.length > 0 && (
-                    <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-4 sm:p-6 space-y-4">
-                        <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
-                          Most frequently identified patterns across all shared experiences
-                        </h3>
-                        {isMobile ? (
-                          <MobileBarChart data={stats!.patternCounts} maxCount={maxCount} />
-                        ) : (
-                          <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={stats!.patternCounts} layout="vertical" margin={{ left: 20 }}>
-                              <XAxis type="number" hide />
-                              <YAxis type="category" dataKey="name" width={160} tick={{ fontSize: 12, fill: "hsl(280, 8%, 40%)" }} />
-                              <Tooltip
-                                contentStyle={{
-                                  background: "hsl(30, 20%, 99%)",
-                                  border: "1px solid hsl(280, 10%, 88%)",
-                                  borderRadius: "12px",
-                                  fontSize: "13px",
-                                }}
-                              />
-                              <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-                                {stats!.patternCounts.map((_, i) => (
-                                  <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        )}
-                        <p className="text-xs text-muted-foreground text-center">
-                          Based on {stats!.totalExperiences} anonymously shared {stats!.totalExperiences === 1 ? "experience" : "experiences"}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <div className="rounded-2xl bg-card p-5 sm:p-8 space-y-4 shadow-[var(--shadow-soft)]">
+                      <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+                        Most frequently identified patterns across all shared experiences
+                      </h3>
+                      {isMobile ? (
+                        <MobileBarChart data={stats!.patternCounts} maxCount={maxCount} />
+                      ) : (
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={stats!.patternCounts} layout="vertical" margin={{ left: 20 }}>
+                            <XAxis type="number" hide />
+                            <YAxis type="category" dataKey="name" width={160} tick={{ fontSize: 12, fill: "hsl(230, 10%, 45%)" }} />
+                            <Tooltip
+                              contentStyle={{
+                                background: "hsl(35, 20%, 97%)",
+                                border: "1px solid hsl(230, 15%, 90%)",
+                                borderRadius: "12px",
+                                fontSize: "13px",
+                              }}
+                            />
+                            <Bar dataKey="count" radius={[0, 8, 8, 0]}>
+                              {stats!.patternCounts.map((_, i) => (
+                                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )}
+                      <p className="text-xs text-muted-foreground text-center">
+                        Based on {stats!.totalExperiences} anonymously shared {stats!.totalExperiences === 1 ? "experience" : "experiences"}
+                      </p>
+                    </div>
                   )}
                 </>
               )}
@@ -332,7 +322,7 @@ const Patterns = () => {
           </>
         )}
 
-        <p className="text-xs text-muted-foreground text-center pb-6">
+        <p className="text-xs text-muted-foreground/60 text-center pb-6">
           This dashboard shows aggregate data only. No individual experiences are identifiable.
         </p>
       </div>
