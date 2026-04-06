@@ -306,7 +306,7 @@ const Results = () => {
   const [shareCopied, setShareCopied] = useState(false);
 
   // Matching stories
-  const [matchingStories, setMatchingStories] = useState<InlineStory[]>([]);
+  const [matchingStories, setMatchingStories] = useState<MatchedStory[]>([]);
 
   // Active section for dot nav
   const [activeSection, setActiveSection] = useState(0);
@@ -328,27 +328,20 @@ const Results = () => {
   // Auto-expand resources for escalation patterns
   useEffect(() => { if (hasEscalation) setResourcesOpen(true); }, [hasEscalation]);
 
-  // Fetch matching stories
+  // Fetch matching stories using cascading match
+  const userFeelings = state?.contextFeeling?.split(", ").filter(Boolean) ?? [];
   useEffect(() => {
     if (patternKeys.length === 0) return;
-    const fetchStories = async () => {
-      try {
-        const { data } = await supabase
-          .from("stories")
-          .select("id, title, story, primary_pattern, created_at, story_type, contains_sensitive_content, sensitive_content_type, source_note")
-          .in("primary_pattern", patternKeys)
-          .eq("reported", false)
-          .order("created_at", { ascending: false })
-          .limit(10);
-        if (!data) return;
-        // Prioritize user stories, then seed stories, take 3
-        const userStories = (data as InlineStory[]).filter((s) => s.story_type === "user");
-        const seedStories = (data as InlineStory[]).filter((s) => s.story_type === "seed");
-        const combined = [...userStories, ...seedStories].slice(0, 3);
-        setMatchingStories(combined);
-      } catch {}
+    const fetch = async () => {
+      const stories = await findMatchingStories({
+        patternKeys,
+        context: state?.contextWhere ?? undefined,
+        feelings: userFeelings.length > 0 ? userFeelings : undefined,
+      }, 3);
+      setMatchingStories(stories);
     };
-    fetchStories();
+    fetch();
+  }, [patternKeys.join(",")]);
   }, [patternKeys.join(",")]);
 
   // IntersectionObserver for dot nav
