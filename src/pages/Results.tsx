@@ -361,21 +361,37 @@ const Results = () => {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {useAI
-              ? ai.patterns.map((aiMatch) => {
-                  const pattern = getPatternByKey(aiMatch.key);
-                  return (
-                    <PatternCard key={aiMatch.key} patternKey={aiMatch.key} title={pattern?.title ?? aiMatch.key}
-                      explanation={pattern?.explanation ?? ""} personalizedText={aiMatch.personalizedExplanation}
-                      confidence={aiMatch.confidence} examples={pattern?.examples ?? []} actions={pattern?.actions ?? []} />
-                  );
-                })
-              : state.matches.map((match) => (
-                  <PatternCard key={match.pattern.key} patternKey={match.pattern.key} title={match.pattern.title}
-                    explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
-                    confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
-                ))}
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {useAI
+                ? ai.patterns.map((aiMatch) => {
+                    const pattern = getPatternByKey(aiMatch.key);
+                    return (
+                      <div key={aiMatch.key} className="space-y-1.5">
+                        <PatternCard patternKey={aiMatch.key} title={pattern?.title ?? aiMatch.key}
+                          explanation={pattern?.explanation ?? ""} personalizedText={aiMatch.personalizedExplanation}
+                          confidence={aiMatch.confidence} examples={pattern?.examples ?? []} actions={pattern?.actions ?? []} />
+                        {(storyCounts[aiMatch.key] ?? 0) >= 3 && (
+                          <Link to={`/stories?pattern=${aiMatch.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
+                            {storyCounts[aiMatch.key]} others have shared experiences like this →
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })
+                : state.matches.map((match) => (
+                    <div key={match.pattern.key} className="space-y-1.5">
+                      <PatternCard patternKey={match.pattern.key} title={match.pattern.title}
+                        explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
+                        confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
+                      {(storyCounts[match.pattern.key] ?? 0) >= 3 && (
+                        <Link to={`/stories?pattern=${match.pattern.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
+                          {storyCounts[match.pattern.key]} others have shared experiences like this →
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+            </div>
           </div>
         )}
 
