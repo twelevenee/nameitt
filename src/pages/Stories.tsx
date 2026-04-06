@@ -32,6 +32,8 @@ interface Story {
   title: string;
   story: string;
   primary_pattern: string;
+  context: string | null;
+  feeling: string | null;
   resonates: number;
   created_at: string;
   story_type: string;
@@ -39,6 +41,8 @@ interface Story {
   sensitive_content_type: string | null;
   source_note: string | null;
 }
+
+const CONTEXT_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online"];
 
 const RESONATED_KEY = "resonated_stories";
 const SHOW_ALL_KEY = "stories_show_all";
@@ -185,6 +189,7 @@ const Stories = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string | null>(searchParams.get("pattern"));
+  const [contextFilter, setContextFilter] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [showAll, setShowAll] = useState(() => {
@@ -193,28 +198,31 @@ const Stories = () => {
   const [patternCounts, setPatternCounts] = useState<Record<string, number>>({});
   const { toast } = useToast();
 
-  useEffect(() => { document.title = "Stories — Was I Too Sensitive?"; }, []);
+  useEffect(() => { document.title = "Stories — Name It"; }, []);
 
   useEffect(() => {
     const fetchCounts = async () => {
-      const { data } = await supabase.from("stories").select("primary_pattern");
+      let query = supabase.from("stories").select("primary_pattern");
+      if (contextFilter) query = query.eq("context", contextFilter);
+      const { data } = await query;
       if (!data) return;
       const counts: Record<string, number> = {};
       for (const row of data) { counts[row.primary_pattern] = (counts[row.primary_pattern] || 0) + 1; }
       setPatternCounts(counts);
     };
     fetchCounts();
-  }, [stories.length]);
+  }, [stories.length, contextFilter]);
 
-  const fetchStories = useCallback(async (pageNum: number, patternFilter: string | null, append = false) => {
+  const fetchStories = useCallback(async (pageNum: number, patternFilter: string | null, ctxFilter: string | null, append = false) => {
     setLoading(true);
     try {
       let query = supabase
         .from("stories")
-        .select("id, title, story, primary_pattern, resonates, created_at, story_type, contains_sensitive_content, sensitive_content_type, source_note")
+        .select("id, title, story, primary_pattern, context, feeling, resonates, created_at, story_type, contains_sensitive_content, sensitive_content_type, source_note")
         .order("created_at", { ascending: false })
         .range(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE - 1);
       if (patternFilter) query = query.eq("primary_pattern", patternFilter);
+      if (ctxFilter) query = query.eq("context", ctxFilter);
       const { data, error } = await query;
       if (error) throw error;
       const rows = (data ?? []) as Story[];
@@ -227,9 +235,9 @@ const Stories = () => {
     }
   }, [toast]);
 
-  useEffect(() => { setPage(0); fetchStories(0, filter); }, [filter, fetchStories]);
+  useEffect(() => { setPage(0); fetchStories(0, filter, contextFilter); }, [filter, contextFilter, fetchStories]);
 
-  const loadMore = () => { const next = page + 1; setPage(next); fetchStories(next, filter, true); };
+  const loadMore = () => { const next = page + 1; setPage(next); fetchStories(next, filter, contextFilter, true); };
 
   const handleReport = async (id: string) => {
     try {
@@ -275,6 +283,19 @@ const Stories = () => {
             );
           })}
         </div>
+
+        {/* Context filter */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide" role="radiogroup" aria-label="Filter by context">
+          <button role="radio" aria-checked={contextFilter === null} onClick={() => setContextFilter(null)}
+            className={`${PILL_BASE} whitespace-nowrap ${contextFilter === null ? PILL_ACTIVE : PILL_INACTIVE}`}>All contexts</button>
+          {CONTEXT_OPTIONS.map((ctx) => (
+            <button key={ctx} role="radio" aria-checked={contextFilter === ctx} onClick={() => setContextFilter(ctx)}
+              className={`${PILL_BASE} whitespace-nowrap capitalize ${contextFilter === ctx ? PILL_ACTIVE : PILL_INACTIVE}`}>
+              {ctx}
+            </button>
+          ))}
+        </div>
+
 
         <div className="flex items-center gap-3">
           <Switch id="show-all" checked={showAll} onCheckedChange={handleShowAllToggle} />

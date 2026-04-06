@@ -208,6 +208,7 @@ export type Database = {
           created_at: string
           experience_id: string
           featured: boolean
+          feeling: string | null
           id: string
           primary_pattern: string
           reported: boolean
@@ -225,6 +226,7 @@ export type Database = {
           created_at?: string
           experience_id: string
           featured?: boolean
+          feeling?: string | null
           id?: string
           primary_pattern: string
           reported?: boolean
@@ -242,6 +244,7 @@ export type Database = {
           created_at?: string
           experience_id?: string
           featured?: boolean
+          feeling?: string | null
           id?: string
           primary_pattern?: string
           reported?: boolean
