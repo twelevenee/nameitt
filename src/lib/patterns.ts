@@ -26,6 +26,22 @@ export interface AnalysisResult {
   lowConfidence: boolean;
 }
 
+export interface AIPatternMatch {
+  key: string;
+  confidence: Confidence;
+  personalizedExplanation: string;
+}
+
+export interface AIAnalysisResult {
+  patterns: AIPatternMatch[];
+  selfDoubtDetected: boolean;
+  validationMessage: string;
+}
+
+export function getPatternByKey(key: string): Pattern | undefined {
+  return PATTERNS.find((p) => p.key === key);
+}
+
 function kw(phrase: string, weight = 1.0): WeightedKeyword {
   return { phrase, weight };
 }
