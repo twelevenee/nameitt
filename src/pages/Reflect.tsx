@@ -517,9 +517,9 @@ const Reflect = () => {
       setScripts(data.scripts);
       if (data.safetyNote) setSafetyNote(data.safetyNote);
       if (experienceId) {
-        supabase.from("scripts").insert({
+        void supabase.from("scripts").insert({
           experience_id: experienceId, scripts: data.scripts, safety_note: data.safetyNote ?? null,
-        } as any).then(() => {}).catch(() => {});
+        } as any);
       }
     } catch {
       setScripts(FALLBACK_SCRIPTS);
