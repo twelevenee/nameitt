@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Heart, Shield, BookOpen } from "lucide-react";
+import { ArrowLeft, Send, Heart, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
@@ -168,17 +168,14 @@ const Reflect = () => {
         } else if (data && data.patterns) {
           aiResult = data as AIAnalysisResult;
         }
-      } catch { /* fallback to local */ }
+      } catch {}
 
       const localAnalysis = analyzeExperience(description, where ?? undefined, feelingStr);
 
       const { error: expErr } = await supabase.from("experiences").insert({
-        id: experienceId,
-        description: REDACTED_PLACEHOLDER,
-        context_where: where,
-        context_feeling: feelings.length > 0 ? feelings.join(", ") : null,
-        self_doubt: doubt,
-        journal_user_id: journalUserId,
+        id: experienceId, description: REDACTED_PLACEHOLDER,
+        context_where: where, context_feeling: feelings.length > 0 ? feelings.join(", ") : null,
+        self_doubt: doubt, journal_user_id: journalUserId,
       });
       if (expErr) throw expErr;
 
@@ -195,7 +192,11 @@ const Reflect = () => {
       if (anaErr) throw anaErr;
 
       navigate("/results", {
-        state: { experienceId, matches: localAnalysis.matches, selfDoubtDetected, lowConfidence: aiResult ? false : localAnalysis.lowConfidence, aiResult, contextWhere: where, contextFeeling: feelings.join(", ") },
+        state: {
+          experienceId, matches: localAnalysis.matches, selfDoubtDetected,
+          lowConfidence: aiResult ? false : localAnalysis.lowConfidence,
+          aiResult, contextWhere: where, contextFeeling: feelings.join(", "),
+        },
       });
     } catch {
       toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
@@ -225,12 +226,7 @@ const Reflect = () => {
       <div className="max-w-2xl mx-auto space-y-12 relative z-10">
         <div className="flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-            Back
-          </Link>
-          <Link to="/my-journal" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-            <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
-            My journal
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />Back
           </Link>
         </div>
 
@@ -277,7 +273,6 @@ const Reflect = () => {
             </div>
           </div>
 
-          {/* Gentle wave divider */}
           <div className="relative -mx-6">
             <GentleWave className="opacity-60" />
           </div>
@@ -293,8 +288,7 @@ const Reflect = () => {
           </RevealSection>
           <RevealSection visible={showSubmit}>
             <Button onClick={handleSubmit} disabled={!description.trim() || overLimit} size="lg" className="rounded-full px-8 h-12 text-base w-full sm:w-auto">
-              <Send className="w-4 h-4" aria-hidden="true" />
-              Reflect
+              <Send className="w-4 h-4" aria-hidden="true" />Reflect
             </Button>
           </RevealSection>
         </div>
@@ -305,7 +299,6 @@ const Reflect = () => {
         </footer>
       </div>
 
-      {/* Warm glow near textarea */}
       <div className="absolute top-[200px] right-0 z-0 pointer-events-none opacity-40">
         <WarmGlow size={180} />
       </div>

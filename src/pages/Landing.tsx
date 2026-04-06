@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Heart, BookOpen, BookText } from "lucide-react";
+import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
@@ -60,26 +60,16 @@ const Landing = () => {
             A gentle tool to help you name uncomfortable experiences without self-blame.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col items-center gap-3 pt-2">
             <Button asChild size="lg" className="rounded-full px-8 text-base h-12 shadow-sm">
               <Link to="/reflect">Reflect on an experience</Link>
             </Button>
-            <Button asChild variant="ghost" size="lg" className="rounded-full px-6 text-base h-12 text-muted-foreground hover:text-foreground">
-              <Link to="/patterns" className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" aria-hidden="true" />
-                View anonymous patterns
-              </Link>
-            </Button>
-          </div>
-
-          <div className="pt-2">
-            <Link
-              to="/stories"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-muted-foreground transition-colors"
-            >
-              <BookText className="w-3.5 h-3.5" aria-hidden="true" />
-              Read others' stories
-            </Link>
+            <p className="text-xs text-muted-foreground/60">
+              or explore{" "}
+              <Link to="/stories" className="underline hover:text-muted-foreground transition-colors">stories</Link>
+              {" "}and{" "}
+              <Link to="/patterns" className="underline hover:text-muted-foreground transition-colors">patterns</Link>
+            </p>
           </div>
 
           {/* Featured stories */}
@@ -119,15 +109,6 @@ const Landing = () => {
               <p className="text-xs text-muted-foreground">
                 No account needed · Fully anonymous · Your words aren't stored
               </p>
-            </div>
-            <div className="block">
-              <Link
-                to="/my-journal"
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors"
-              >
-                <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
-                Access your private journal
-              </Link>
             </div>
           </div>
         </div>
