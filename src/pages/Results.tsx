@@ -17,6 +17,7 @@ import { FALLBACK_SCRIPTS } from "@/lib/fallback-scripts";
 import type { Script } from "@/lib/fallback-scripts";
 import { getRandomAffirmation, getValidationAffirmation, AFFIRMATIONS } from "@/lib/affirmations";
 import { WarmBlobs, GentleWave } from "@/components/Illustrations";
+import { getResearchStat } from "@/lib/research-stats";
 
 const LoadingAffirmation = () => {
   const [idx, setIdx] = useState(0);
