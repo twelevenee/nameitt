@@ -45,12 +45,7 @@ const CONFIDENCE_LABELS: Record<string, { label: string; variant: "default" | "s
   low: { label: "Worth considering", variant: "outline" },
 };
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support for domestic violence" },
-  { name: "UN Women", url: "https://unwomen.org", desc: "Global gender equality resources" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741 for free crisis support" },
-];
+import CrisisResourceList from "@/components/CrisisResourceList";
 
 const TONE_BG: Record<string, string> = {
   "Gentle but firm": "bg-[hsl(220,30%,96%)]",
