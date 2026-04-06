@@ -13,6 +13,7 @@ import Stories from "./pages/Stories";
 import SharedSummary from "./pages/SharedSummary";
 import NotFound from "./pages/NotFound";
 import AdminSeed from "./pages/AdminSeed";
+import HowItWorks from "./pages/HowItWorks";
 import Companion from "./components/Companion";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
         <PageTransition>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/reflect" element={<Reflect />} />
             <Route path="/results" element={<Results />} />
             <Route path="/patterns" element={<Patterns />} />

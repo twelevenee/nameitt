@@ -70,6 +70,9 @@ const Landing = () => {
               {" "}and{" "}
               <Link to="/patterns" className="underline hover:text-muted-foreground transition-colors">patterns</Link>
             </p>
+            <p className="text-xs text-muted-foreground/40">
+              <Link to="/how-it-works" className="underline hover:text-muted-foreground transition-colors">Learn how it works</Link>
+            </p>
           </div>
 
           {/* Featured stories */}
