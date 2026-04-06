@@ -44,6 +44,7 @@ const AdminSeed = () => {
         primary_pattern: s.primary_pattern,
         secondary_pattern: s.secondary_pattern,
         context: s.context,
+        feeling: s.feeling,
         contains_sensitive_content: s.contains_sensitive_content,
         sensitive_content_type: s.sensitive_content_type,
         story_type: s.story_type,
