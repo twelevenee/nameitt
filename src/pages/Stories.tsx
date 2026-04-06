@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { formatDistanceToNow } from "date-fns";
+import { getRandomAffirmation } from "@/lib/affirmations";
+import { QuietScene } from "@/components/Illustrations";
 
 const PILL_BASE = "px-3 py-2 rounded-full text-xs transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 const PILL_ACTIVE = "bg-primary text-primary-foreground";
@@ -226,13 +228,16 @@ const Stories = () => {
 
         {/* Stories feed */}
         {!loading && stories.length === 0 ? (
-          <div className="rounded-2xl bg-card p-8 text-center space-y-4 shadow-[var(--shadow-soft)]">
+          <div className="rounded-2xl bg-card p-8 text-center space-y-6 shadow-[var(--shadow-soft)]">
+            <div className="flex justify-center">
+              <QuietScene className="w-48 h-36 opacity-60" />
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Stories will appear here as people choose to share their reflections. Every story helps someone else feel less alone.
+              Stories will bloom here as people choose to share their reflections. Every reflection helps someone else feel less alone.
             </p>
             <Button asChild className="rounded-full">
               <Link to="/reflect" className="inline-flex items-center gap-2">
-                <PenLine className="w-4 h-4" aria-hidden="true" />Reflect on an experience
+                <PenLine className="w-4 h-4" aria-hidden="true" />Share your reflection
               </Link>
             </Button>
           </div>
@@ -252,9 +257,12 @@ const Stories = () => {
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground/60 text-center pb-6">
-          These stories are AI-generated from anonymous reflection data. No identifying information is included.
-        </p>
+        <footer className="space-y-3 pb-6">
+          <p className="text-xs text-muted-foreground/40 italic text-center">"{getRandomAffirmation()}"</p>
+          <p className="text-xs text-muted-foreground/60 text-center">
+            These stories are AI-generated from anonymous reflection data. No identifying information is included.
+          </p>
+        </footer>
       </div>
     </div>
   );
