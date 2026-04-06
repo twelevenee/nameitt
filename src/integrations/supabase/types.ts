@@ -203,6 +203,8 @@ export type Database = {
       }
       stories: {
         Row: {
+          contains_sensitive_content: boolean
+          context: string | null
           created_at: string
           experience_id: string
           featured: boolean
@@ -210,10 +212,16 @@ export type Database = {
           primary_pattern: string
           reported: boolean
           resonates: number
+          secondary_pattern: string | null
+          sensitive_content_type: string | null
+          source_note: string | null
           story: string
+          story_type: string
           title: string
         }
         Insert: {
+          contains_sensitive_content?: boolean
+          context?: string | null
           created_at?: string
           experience_id: string
           featured?: boolean
@@ -221,10 +229,16 @@ export type Database = {
           primary_pattern: string
           reported?: boolean
           resonates?: number
+          secondary_pattern?: string | null
+          sensitive_content_type?: string | null
+          source_note?: string | null
           story: string
+          story_type?: string
           title: string
         }
         Update: {
+          contains_sensitive_content?: boolean
+          context?: string | null
           created_at?: string
           experience_id?: string
           featured?: boolean
@@ -232,7 +246,11 @@ export type Database = {
           primary_pattern?: string
           reported?: boolean
           resonates?: number
+          secondary_pattern?: string | null
+          sensitive_content_type?: string | null
+          source_note?: string | null
           story?: string
+          story_type?: string
           title?: string
         }
         Relationships: [
