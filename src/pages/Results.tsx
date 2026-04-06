@@ -654,14 +654,8 @@ const Results = () => {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${resourcesOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                 </button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="pt-3 space-y-2">
-                {RESOURCES.map((r) => (
-                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
-                    <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                    <span><span className="font-medium text-foreground/80">{r.name}</span> — {r.desc}</span>
-                  </a>
-                ))}
+              <CollapsibleContent className="pt-3">
+                <CrisisResourceList />
               </CollapsibleContent>
             </Collapsible>
 
