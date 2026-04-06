@@ -1,3 +1,16 @@
+/*
+ * RTL AWARENESS NOTE:
+ * When translations are added for RTL languages (Arabic, Hebrew, Farsi, Urdu, etc.),
+ * review all layout code for hardcoded directional properties:
+ *   - Replace pl-* / pr-* with ps-* / pe-* (logical start/end)
+ *   - Replace ml-* / mr-* with ms-* / me-* (logical start/end)
+ *   - Replace left-* / right-* with start-* / end-* in positioning
+ *   - Replace text-left / text-right with text-start / text-end
+ *   - Check flex-row layouts for proper direction flipping
+ *   - Test all illustrations and decorative elements for mirroring
+ * Tailwind v3 has limited logical property support; consider a plugin or manual overrides.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

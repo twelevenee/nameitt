@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PenLine, Lightbulb, Heart, ArrowLeft, ExternalLink } from "lucide-react";
+import CrisisResourceList from "@/components/CrisisResourceList";
 import { PATTERNS } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { FALLBACK_SCRIPTS } from "@/lib/fallback-scripts";
@@ -10,11 +11,7 @@ import { SEED_STORIES } from "@/lib/seed-stories";
 import { WarmBlobs, FloatingShapes, GentleWave, QuietScene, WarmGlow } from "@/components/Illustrations";
 import { getRandomAffirmation } from "@/lib/affirmations";
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741" },
-];
+// Resources now come from CrisisResourceList component
 
 const sampleStories = [
   SEED_STORIES.find((s) => s.primary_pattern === "emotional_invalidation")!,
@@ -345,19 +342,8 @@ const HowItWorks = () => {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            {RESOURCES.map((r) => (
-              <a
-                key={r.url}
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                <span className="font-medium">{r.name}</span>
-              </a>
-            ))}
+          <div className="pt-2 max-w-md mx-auto">
+            <CrisisResourceList compact />
           </div>
         </div>
       </section>

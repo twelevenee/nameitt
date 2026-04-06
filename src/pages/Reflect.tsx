@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Send, Heart, Shield, ShieldAlert, ExternalLink } from "lucide-react";
+import CrisisResourceList from "@/components/CrisisResourceList";
+import { getCountry, getPrimaryHelpUrl } from "@/lib/i18n/crisis-resources";
+import { strings } from "@/lib/i18n/strings";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
@@ -316,31 +319,15 @@ const Reflect = () => {
               <div className="flex items-start gap-3">
                 <ShieldAlert className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-3">
-                  <p className="text-base font-medium text-foreground">Before we continue — are you safe right now?</p>
+                  <p className="text-base font-medium text-foreground">{strings.reflect.safetyHeading}</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Your safety is the most important thing. If you're in danger or need immediate help, these resources are available 24/7.
+                    {strings.reflect.safetyBody}
                   </p>
-                  <div className="space-y-2 pl-1">
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">National Domestic Violence Hotline:</span>{" "}
-                      <a href="tel:1-800-799-7233" className="underline">1-800-799-7233</a>{" "}
-                      <span className="text-muted-foreground">(</span>
-                      <a href="https://thehotline.org" target="_blank" rel="noopener noreferrer" className="underline text-muted-foreground hover:text-foreground transition-colors">thehotline.org</a>
-                      <span className="text-muted-foreground">)</span>
-                    </p>
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">Crisis Text Line:</span>{" "}
-                      Text HOME to 741741
-                    </p>
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">Emergency:</span>{" "}
-                      Call 911
-                    </p>
-                  </div>
+                  <CrisisResourceList />
                   <div className="flex flex-col sm:flex-row items-start gap-3 pt-2">
                     <Button asChild variant="secondary" size="sm" className="rounded-full gap-1.5">
-                      <a href="https://thehotline.org" target="_blank" rel="noopener noreferrer">
-                        I need help now <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                      <a href={getPrimaryHelpUrl(getCountry())} target="_blank" rel="noopener noreferrer">
+                        {strings.reflect.safetyHelpNow} <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                       </a>
                     </Button>
                     <button
@@ -348,7 +335,7 @@ const Reflect = () => {
                       onClick={handleDismissSafety}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
                     >
-                      I'm reflecting on a past experience — continue
+                      {strings.reflect.safetyContinue}
                     </button>
                   </div>
                 </div>

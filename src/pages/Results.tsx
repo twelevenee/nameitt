@@ -45,12 +45,7 @@ const CONFIDENCE_LABELS: Record<string, { label: string; variant: "default" | "s
   low: { label: "Worth considering", variant: "outline" },
 };
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support for domestic violence" },
-  { name: "UN Women", url: "https://unwomen.org", desc: "Global gender equality resources" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741 for free crisis support" },
-];
+import CrisisResourceList from "@/components/CrisisResourceList";
 
 const TONE_BG: Record<string, string> = {
   "Gentle but firm": "bg-[hsl(220,30%,96%)]",
@@ -659,14 +654,8 @@ const Results = () => {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${resourcesOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                 </button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="pt-3 space-y-2">
-                {RESOURCES.map((r) => (
-                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded">
-                    <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                    <span><span className="font-medium text-foreground/80">{r.name}</span> — {r.desc}</span>
-                  </a>
-                ))}
+              <CollapsibleContent className="pt-3">
+                <CrisisResourceList />
               </CollapsibleContent>
             </Collapsible>
 

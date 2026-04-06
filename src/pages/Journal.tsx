@@ -9,6 +9,7 @@ import {
   ArrowLeft, Lock, Copy, Check, BookOpen, PenLine,
   Sun, Sprout, Cloud, CloudRain, Heart, ChevronDown, ExternalLink, BarChart3,
 } from "lucide-react";
+import CrisisResourceList from "@/components/CrisisResourceList";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { generatePassphrase } from "@/lib/wordlist";
@@ -60,11 +61,7 @@ const FEELING_COLOR_MAP: Record<string, string> = Object.fromEntries(
   FEELING_OPTIONS.map((f) => [f.label, f.color])
 );
 
-const RESOURCES = [
-  { name: "RAINN", url: "https://rainn.org", desc: "Support for sexual violence" },
-  { name: "National Domestic Violence Hotline", url: "https://thehotline.org", desc: "24/7 support" },
-  { name: "Crisis Text Line", url: "https://crisistextline.org", desc: "Text HOME to 741741" },
-];
+// Resources now come from CrisisResourceList component
 
 const PILL_BASE = "px-3 py-2 rounded-full text-xs transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex items-center gap-1.5";
 const PILL_ACTIVE = "bg-primary text-primary-foreground";
@@ -252,16 +249,7 @@ const EscalationCard = ({ result }: { result: EscalationResult }) => {
       )}
       {result.showResources && (
         <div className="space-y-2 pt-1">
-          {result.level === "urgent" && (
-            <p className="text-base font-semibold text-foreground">Text HOME to 741741 for free crisis support</p>
-          )}
-          {RESOURCES.map((r) => (
-            <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span><span className="font-medium text-foreground/80">{r.name}</span> — {r.desc}</span>
-            </a>
-          ))}
+          <CrisisResourceList />
         </div>
       )}
     </div>

@@ -8,6 +8,8 @@ import { getPatternByKey } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
 import { getRandomAffirmation } from "@/lib/affirmations";
 import { WarmBlobs, FloatingShapes, GentleWave } from "@/components/Illustrations";
+import { strings } from "@/lib/i18n/strings";
+import CountrySelector from "@/components/CountrySelector";
 
 interface FeaturedStory {
   id: string;
@@ -21,7 +23,7 @@ const Landing = () => {
   const [affirmation] = useState(getRandomAffirmation);
 
   useEffect(() => {
-    document.title = "Name It — It wasn't nothing.";
+    document.title = strings.landing.heading + " — Name It";
     const fetchFeatured = async () => {
       const { data } = await supabase
         .from("stories")
@@ -47,23 +49,23 @@ const Landing = () => {
       <div className="flex-1 flex items-center justify-center px-6 py-16 relative z-10">
         <div className="max-w-xl text-center space-y-8">
           <p className="text-sm text-muted-foreground">
-            For women and gender-diverse people
+            {strings.landing.audience}
           </p>
 
           <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] leading-[1.15] text-foreground tracking-tight font-semibold">
-            It wasn't nothing.
+            {strings.landing.heading}
           </h1>
 
           <p className="text-lg text-muted-foreground max-w-[500px] mx-auto leading-relaxed">
-            When something feels wrong but you can't name it — when you're told you're overreacting — this tool helps you find the words. No account. No judgment. Just clarity.
+            {strings.landing.subtitle}
           </p>
 
           <div className="flex flex-col items-center gap-3 pt-2">
             <Button asChild size="lg" className="rounded-full px-8 text-base h-12 shadow-sm">
-              <Link to="/reflect">Describe what happened</Link>
+              <Link to="/reflect">{strings.landing.cta}</Link>
             </Button>
             <p className="text-xs text-muted-foreground/60">
-              Takes about 3 minutes. Your words are never stored.
+              {strings.landing.ctaSubtext}
             </p>
           </div>
 
@@ -73,7 +75,7 @@ const Landing = () => {
               <div className="relative -mx-6 py-4">
                 <GentleWave className="opacity-30" />
               </div>
-              <p className="text-xs text-muted-foreground/70 uppercase tracking-wide font-medium">From people who reflected here</p>
+              <p className="text-xs text-muted-foreground/70 uppercase tracking-wide font-medium">{strings.landing.featuredHeading}</p>
               <div className="space-y-3">
                 {featured.map((s) => {
                   const pat = getPatternByKey(s.primary_pattern);
@@ -103,12 +105,13 @@ const Landing = () => {
 
           <div className="pt-4 space-y-3">
             <p className="text-xs text-muted-foreground/60">
-              <Link to="/how-it-works" className="underline hover:text-muted-foreground transition-colors">Learn how it works</Link>
+              <Link to="/how-it-works" className="underline hover:text-muted-foreground transition-colors">{strings.landing.learnLink}</Link>
               {" · "}
-              <Link to="/stories" className="underline hover:text-muted-foreground transition-colors">Browse stories</Link>
+              <Link to="/stories" className="underline hover:text-muted-foreground transition-colors">{strings.landing.storiesLink}</Link>
               {" · "}
-              <Link to="/patterns" className="underline hover:text-muted-foreground transition-colors">View patterns</Link>
+              <Link to="/patterns" className="underline hover:text-muted-foreground transition-colors">{strings.landing.patternsLink}</Link>
             </p>
+            <CountrySelector />
           </div>
         </div>
       </div>
@@ -118,7 +121,7 @@ const Landing = () => {
           "{affirmation}"
         </p>
         <p className="text-xs text-muted-foreground/50 max-w-md mx-auto leading-relaxed">
-          This tool does not provide legal, medical, or clinical advice. It is designed to support personal reflection only.
+          {strings.landing.disclaimer}
         </p>
       </footer>
     </div>
