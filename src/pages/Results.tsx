@@ -250,6 +250,26 @@ const Results = () => {
       }
       if (contribute === true) {
         await supabase.from("experiences").update({ contributed: true }).eq("id", state.experienceId);
+
+        // Generate story in background — fire and forget
+        supabase.functions.invoke("generate-story", {
+          body: {
+            patternKeys,
+            context: state.contextWhere,
+            feeling: state.contextFeeling,
+            selfDoubtDetected: state.selfDoubtDetected,
+            validationMessage: ai?.validationMessage,
+          },
+        }).then(async ({ data }) => {
+          if (data?.story && data?.title && data?.primaryPattern) {
+            await supabase.from("stories").insert({
+              experience_id: state.experienceId,
+              title: data.title,
+              story: data.story,
+              primary_pattern: data.primaryPattern,
+            } as any);
+          }
+        }).catch(() => { /* silently fail */ });
       }
       setSubmitted(true);
       toast({ title: "Thank you for reflecting." });
