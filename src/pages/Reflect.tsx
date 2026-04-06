@@ -9,6 +9,21 @@ import { analyzeExperience } from "@/lib/patterns";
 import type { AIAnalysisResult } from "@/lib/patterns";
 import { useToast } from "@/hooks/use-toast";
 import { getSessionUserId } from "@/lib/journal-auth";
+import { getRandomAffirmation, AFFIRMATIONS } from "@/lib/affirmations";
+import { GentleWave, WarmGlow } from "@/components/Illustrations";
+
+const LoadingAffirmation = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % AFFIRMATIONS.length), 3000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <p className="text-sm text-muted-foreground/60 italic transition-opacity duration-500">
+      "{AFFIRMATIONS[idx]}"
+    </p>
+  );
+};
 
 const WHERE_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online", "other"];
 const FEELING_OPTIONS = ["confusing", "uncomfortable", "humiliating", "unsafe", "angry", "not sure"];
