@@ -34,6 +34,7 @@ interface JournalExperience {
   context_feeling: string | null;
   self_doubt: string | null;
   analyses: { detected_patterns: unknown; self_doubt_detected: boolean }[];
+  scripts: { scripts: unknown; safety_note: string | null }[];
 }
 
 interface JournalCheckin {
@@ -381,7 +382,7 @@ const JournalTimeline = () => {
       const [expRes, checkinRes] = await Promise.all([
         supabase
           .from("experiences")
-          .select("id, created_at, context_where, context_feeling, self_doubt, analyses(detected_patterns, self_doubt_detected)")
+          .select("id, created_at, context_where, context_feeling, self_doubt, analyses(detected_patterns, self_doubt_detected), scripts(scripts, safety_note)")
           .eq("journal_user_id", userId)
           .order("created_at", { ascending: false }),
         supabase
