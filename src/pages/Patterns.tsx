@@ -322,6 +322,16 @@ const Patterns = () => {
           </>
         )}
 
+        <div className="rounded-2xl bg-card/60 p-5 text-center space-y-2">
+          <p className="text-sm text-foreground">Hear from others</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Read anonymous stories from people who reflected on similar experiences.
+          </p>
+          <Link to="/stories" className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors">
+            Browse stories
+          </Link>
+        </div>
+
         <p className="text-xs text-muted-foreground/60 text-center pb-6">
           This dashboard shows aggregate data only. No individual experiences are identifiable.
         </p>
