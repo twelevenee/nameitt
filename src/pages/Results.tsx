@@ -342,8 +342,6 @@ const Results = () => {
     };
     fetch();
   }, [patternKeys.join(",")]);
-  }, [patternKeys.join(",")]);
-
   // IntersectionObserver for dot nav
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
