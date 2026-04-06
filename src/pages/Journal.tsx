@@ -548,6 +548,24 @@ const JournalTimeline = () => {
                           {analysis?.self_doubt_detected && (
                             <p className="text-xs text-muted-foreground italic">Self-doubt was detected in this reflection</p>
                           )}
+                          {entry.scripts?.[0]?.scripts && (
+                            <Collapsible>
+                              <CollapsibleTrigger asChild>
+                                <button className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors pt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
+                                  Your practiced responses
+                                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
+                                </button>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-2 space-y-2">
+                                {(Array.isArray(entry.scripts[0].scripts) ? entry.scripts[0].scripts as { tone: string; text: string; why: string }[] : []).map((s, i) => (
+                                  <div key={i} className="rounded-xl bg-background/60 p-3 space-y-1">
+                                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{s.tone}</p>
+                                    <p className="text-sm text-foreground leading-relaxed">"{s.text}"</p>
+                                  </div>
+                                ))}
+                              </CollapsibleContent>
+                            </Collapsible>
+                          )}
                         </div>
                       </div>
                     );
