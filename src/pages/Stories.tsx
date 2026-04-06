@@ -213,15 +213,16 @@ const Stories = () => {
     fetchCounts();
   }, [stories.length, contextFilter]);
 
-  const fetchStories = useCallback(async (pageNum: number, patternFilter: string | null, append = false) => {
+  const fetchStories = useCallback(async (pageNum: number, patternFilter: string | null, ctxFilter: string | null, append = false) => {
     setLoading(true);
     try {
       let query = supabase
         .from("stories")
-        .select("id, title, story, primary_pattern, resonates, created_at, story_type, contains_sensitive_content, sensitive_content_type, source_note")
+        .select("id, title, story, primary_pattern, context, feeling, resonates, created_at, story_type, contains_sensitive_content, sensitive_content_type, source_note")
         .order("created_at", { ascending: false })
         .range(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE - 1);
       if (patternFilter) query = query.eq("primary_pattern", patternFilter);
+      if (ctxFilter) query = query.eq("context", ctxFilter);
       const { data, error } = await query;
       if (error) throw error;
       const rows = (data ?? []) as Story[];
@@ -234,9 +235,9 @@ const Stories = () => {
     }
   }, [toast]);
 
-  useEffect(() => { setPage(0); fetchStories(0, filter); }, [filter, fetchStories]);
+  useEffect(() => { setPage(0); fetchStories(0, filter, contextFilter); }, [filter, contextFilter, fetchStories]);
 
-  const loadMore = () => { const next = page + 1; setPage(next); fetchStories(next, filter, true); };
+  const loadMore = () => { const next = page + 1; setPage(next); fetchStories(next, filter, contextFilter, true); };
 
   const handleReport = async (id: string) => {
     try {
