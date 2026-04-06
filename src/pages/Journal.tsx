@@ -117,6 +117,9 @@ const PassphraseScreen = ({ onAuthenticated }: { onAuthenticated: () => void }) 
           <BookOpen className="w-8 h-8 text-primary mx-auto" aria-hidden="true" />
           <h1 className="text-2xl sm:text-3xl text-foreground tracking-tight">Your Private Journal</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">Access your reflections with a private passphrase. No email, no account.</p>
+          <Link to="/how-it-works" className="text-xs text-muted-foreground/60 underline hover:text-muted-foreground transition-colors">
+            Learn more about what Name It does
+          </Link>
         </div>
 
         {mode === "choose" && (
