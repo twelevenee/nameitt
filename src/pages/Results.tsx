@@ -413,6 +413,15 @@ const Results = () => {
                       <PatternCard patternKey={match.pattern.key} title={match.pattern.title}
                         explanation={match.pattern.explanation} personalizedText={match.pattern.whyRelates}
                         confidence={match.confidence} examples={match.pattern.examples} actions={match.pattern.actions} />
+                      {(() => {
+                        const rs = getResearchStat(match.pattern.key);
+                        return rs ? (
+                          <p className="text-[11px] text-muted-foreground/60 leading-relaxed pl-1">
+                            {rs.stat} —{" "}
+                            <a href={rs.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">{rs.source}</a>
+                          </p>
+                        ) : null;
+                      })()}
                       {(storyCounts[match.pattern.key] ?? 0) >= 3 && (
                         <Link to={`/stories?pattern=${match.pattern.key}`} className="block text-xs text-muted-foreground hover:text-primary transition-colors pl-1">
                           {storyCounts[match.pattern.key]} others have shared experiences like this →
