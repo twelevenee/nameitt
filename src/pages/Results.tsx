@@ -410,6 +410,8 @@ const Results = () => {
                 primary_pattern: data.primaryPattern, story_type: "user",
                 contains_sensitive_content: safetyResult.containsSensitiveContent,
                 sensitive_content_type: safetyResult.sensitiveContentType,
+                context: state.contextWhere ?? null,
+                feeling: userFeelings[0] ?? null,
               } as any);
             }
           }
@@ -560,7 +562,7 @@ const Results = () => {
             {matchingStories.length > 0 ? (
               <>
                 <div className="space-y-3">
-                  {matchingStories.map((s) => <InlineStoryCard key={s.id} story={s} />)}
+                  {matchingStories.map((s) => <InlineStoryCard key={s.id} story={s} userContext={state?.contextWhere ?? undefined} userFeeling={userFeelings[0]} />)}
                 </div>
                 {topPatternKey && (
                   <Link
