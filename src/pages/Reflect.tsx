@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeExperience } from "@/lib/patterns";
@@ -12,6 +12,12 @@ import { useToast } from "@/hooks/use-toast";
 const WHERE_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online", "other"];
 const FEELING_OPTIONS = ["confusing", "uncomfortable", "humiliating", "unsafe", "angry", "not sure"];
 const DOUBT_OPTIONS = ["yes", "no", "not sure"];
+
+const EXAMPLE_PROMPTS = [
+  "Someone at work said something that felt off, but I can't explain why it bothered me",
+  "I was told I was overreacting, but something about the situation didn't feel right",
+  "Someone did something that seemed nice on the surface, but it left me feeling uncomfortable",
+];
 
 const PillSelect = ({
   label,
@@ -82,6 +88,37 @@ const PillMultiSelect = ({
   </div>
 );
 
+const RevealSection = ({
+  visible,
+  children,
+  onSkip,
+}: {
+  visible: boolean;
+  children: React.ReactNode;
+  onSkip?: () => void;
+}) => (
+  <div
+    className={`transition-all duration-300 ease-out ${
+      visible
+        ? "opacity-100 translate-y-0 max-h-[500px]"
+        : "opacity-0 translate-y-4 max-h-0 overflow-hidden pointer-events-none"
+    }`}
+  >
+    <div className="relative">
+      {children}
+      {onSkip && visible && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="absolute top-0 right-0 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Skip
+        </button>
+      )}
+    </div>
+  </div>
+);
+
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
@@ -90,6 +127,47 @@ const Reflect = () => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Progressive reveal state
+  const [showWhere, setShowWhere] = useState(false);
+  const [showFeelings, setShowFeelings] = useState(false);
+  const [showDoubt, setShowDoubt] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(false);
+
+  const charCount = description.trim().length;
+
+  // Progressive reveal logic
+  useEffect(() => {
+    if (charCount >= 20 && !showWhere) setShowWhere(true);
+  }, [charCount, showWhere]);
+
+  useEffect(() => {
+    if (where !== null && !showFeelings) setShowFeelings(true);
+  }, [where, showFeelings]);
+
+  useEffect(() => {
+    if (feelings.length > 0 && !showDoubt) setShowDoubt(true);
+  }, [feelings, showDoubt]);
+
+  useEffect(() => {
+    if (doubt !== null && !showSubmit) setShowSubmit(true);
+  }, [doubt, showSubmit]);
+
+  const handleSkipWhere = () => {
+    setShowFeelings(true);
+  };
+  const handleSkipFeelings = () => {
+    setShowDoubt(true);
+  };
+  const handleSkipDoubt = () => {
+    setShowSubmit(true);
+  };
+
+  const encouragementText = charCount >= 100
+    ? "Thank you for sharing. Add as much or as little detail as you'd like."
+    : charCount >= 20
+    ? "You're doing great. Take your time."
+    : null;
 
   const handleSubmit = async () => {
     if (!description.trim()) {
@@ -136,7 +214,7 @@ const Reflect = () => {
 
       if (expErr) throw expErr;
 
-      // Store analysis — use AI patterns if available, else local
+      // Store analysis
       const detectedPatterns = aiResult
         ? aiResult.patterns.map((p) => p.key)
         : localAnalysis.matches.map((m) => m.pattern.key);
@@ -163,10 +241,29 @@ const Reflect = () => {
       });
     } catch {
       toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
-    } finally {
       setSubmitting(false);
     }
   };
+
+  if (submitting) {
+    return (
+      <div className="min-h-screen px-6 py-10 flex items-center justify-center" style={{ background: "var(--gradient-warm)" }}>
+        <div className="text-center space-y-6 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+            <Heart className="w-8 h-8 text-primary animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg text-foreground font-medium">
+              Taking a moment to understand your experience…
+            </p>
+            <p className="text-sm text-muted-foreground">
+              This usually takes a few seconds
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
@@ -184,30 +281,63 @@ const Reflect = () => {
         </div>
 
         <div className="space-y-8">
-          <Textarea
-            placeholder="Tell us what happened…"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="min-h-[180px] text-base bg-card/80 backdrop-blur-sm border-border/60 rounded-2xl p-5 resize-none focus:ring-primary/30"
-          />
+          {/* Example prompts */}
+          {charCount === 0 && (
+            <div className="space-y-2 animate-fade-in">
+              <p className="text-xs text-muted-foreground">Not sure where to start? Try one of these:</p>
+              <div className="flex flex-col gap-2">
+                {EXAMPLE_PROMPTS.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => setDescription(prompt)}
+                    className="text-left px-4 py-2.5 rounded-xl text-sm text-muted-foreground border border-dashed border-border/60 hover:border-primary/40 hover:text-foreground transition-all bg-transparent"
+                  >
+                    "{prompt}"
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-          <PillSelect label="Where did it happen?" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
-          <PillMultiSelect label="How did it feel? (select all that apply)" options={FEELING_OPTIONS} value={feelings} onChange={setFeelings} />
-          <PillSelect label="Did you doubt yourself?" options={DOUBT_OPTIONS} value={doubt} onChange={setDoubt} />
-
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting || !description.trim()}
-            size="lg"
-            className="rounded-full px-8 h-12 text-base w-full sm:w-auto"
-          >
-            {submitting ? "Taking a moment to understand your experience…" : (
-              <>
-                <Send className="w-4 h-4" />
-                Reflect
-              </>
+          <div className="space-y-2">
+            <Textarea
+              placeholder="Tell us what happened…"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="min-h-[180px] text-base bg-card/80 backdrop-blur-sm border-border/60 rounded-2xl p-5 resize-none focus:ring-primary/30"
+            />
+            {/* Encouragement text */}
+            {encouragementText && (
+              <p className="text-xs text-muted-foreground animate-fade-in pl-1">
+                {encouragementText}
+              </p>
             )}
-          </Button>
+          </div>
+
+          <RevealSection visible={showWhere} onSkip={handleSkipWhere}>
+            <PillSelect label="Where did it happen?" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
+          </RevealSection>
+
+          <RevealSection visible={showFeelings} onSkip={handleSkipFeelings}>
+            <PillMultiSelect label="How did it feel? (select all that apply)" options={FEELING_OPTIONS} value={feelings} onChange={setFeelings} />
+          </RevealSection>
+
+          <RevealSection visible={showDoubt} onSkip={handleSkipDoubt}>
+            <PillSelect label="Did you doubt yourself?" options={DOUBT_OPTIONS} value={doubt} onChange={setDoubt} />
+          </RevealSection>
+
+          <RevealSection visible={showSubmit}>
+            <Button
+              onClick={handleSubmit}
+              disabled={!description.trim()}
+              size="lg"
+              className="rounded-full px-8 h-12 text-base w-full sm:w-auto"
+            >
+              <Send className="w-4 h-4" />
+              Reflect
+            </Button>
+          </RevealSection>
         </div>
 
         <p className="text-xs text-muted-foreground">
