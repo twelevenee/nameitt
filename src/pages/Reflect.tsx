@@ -163,6 +163,8 @@ const Reflect = () => {
   const [showSubmit, setShowSubmit] = useState(false);
 
   const charCount = description.trim().length;
+  const MAX_CHARS = 2000;
+  const overLimit = charCount > MAX_CHARS;
 
   useEffect(() => {
     document.title = "Share Your Experience — Was I Too Sensitive?";
@@ -227,7 +229,7 @@ const Reflect = () => {
           aiResult = data as AIAnalysisResult;
         }
       } catch {
-        console.warn("AI analysis failed, falling back to local analysis");
+        // AI analysis failed, falling back to local analysis
       }
 
       const localAnalysis = analyzeExperience(description, where ?? undefined, feelingStr);
@@ -337,11 +339,18 @@ const Reflect = () => {
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[140px] sm:min-h-[180px] text-base bg-card/80 backdrop-blur-sm border-border/60 rounded-2xl p-5 resize-none focus:ring-primary/30"
             />
-            {encouragementText && (
-              <p className="text-xs text-muted-foreground animate-fade-in pl-1" aria-live="polite">
-                {encouragementText}
-              </p>
-            )}
+            <div className="flex items-center justify-between">
+              {encouragementText && (
+                <p className="text-xs text-muted-foreground animate-fade-in pl-1" aria-live="polite">
+                  {encouragementText}
+                </p>
+              )}
+              {charCount > 0 && (
+                <p className={`text-xs ml-auto pl-2 ${overLimit ? "text-destructive font-medium" : charCount >= 1800 ? "text-yellow-600" : "text-muted-foreground"}`}>
+                  {charCount} / {MAX_CHARS}
+                </p>
+              )}
+            </div>
 
             <div className="flex items-start gap-2.5 rounded-xl bg-accent/40 border border-border/30 px-4 py-3">
               <Shield className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" aria-hidden="true" />
@@ -366,7 +375,7 @@ const Reflect = () => {
           <RevealSection visible={showSubmit}>
             <Button
               onClick={handleSubmit}
-              disabled={!description.trim()}
+              disabled={!description.trim() || overLimit}
               size="lg"
               className="rounded-full px-8 h-12 text-base w-full sm:w-auto"
             >

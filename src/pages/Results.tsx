@@ -51,7 +51,7 @@ const PatternCard = ({
   const conf = CONFIDENCE_LABELS[confidence] ?? CONFIDENCE_LABELS.low;
 
   return (
-    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl overflow-hidden">
       <CardContent className="p-5 space-y-3">
         <div className="flex items-center gap-3 text-primary">
           {PATTERN_ICONS[patternKey]}
@@ -208,36 +208,44 @@ const Results = () => {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {useAI
-            ? ai.patterns.map((aiMatch) => {
-                const pattern = getPatternByKey(aiMatch.key);
-                return (
+        {(useAI && ai.patterns.length === 0) || (!useAI && state.matches.length === 0) ? (
+          <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/40 p-6 space-y-2 text-center">
+            <p className="text-sm text-foreground leading-relaxed">
+              We couldn't identify a specific pattern, but that doesn't mean your experience wasn't real. Sometimes experiences are complex and don't fit neat categories.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {useAI
+              ? ai.patterns.map((aiMatch) => {
+                  const pattern = getPatternByKey(aiMatch.key);
+                  return (
+                    <PatternCard
+                      key={aiMatch.key}
+                      patternKey={aiMatch.key}
+                      title={pattern?.title ?? aiMatch.key}
+                      explanation={pattern?.explanation ?? ""}
+                      personalizedText={aiMatch.personalizedExplanation}
+                      confidence={aiMatch.confidence}
+                      examples={pattern?.examples ?? []}
+                      actions={pattern?.actions ?? []}
+                    />
+                  );
+                })
+              : state.matches.map((match) => (
                   <PatternCard
-                    key={aiMatch.key}
-                    patternKey={aiMatch.key}
-                    title={pattern?.title ?? aiMatch.key}
-                    explanation={pattern?.explanation ?? ""}
-                    personalizedText={aiMatch.personalizedExplanation}
-                    confidence={aiMatch.confidence}
-                    examples={pattern?.examples ?? []}
-                    actions={pattern?.actions ?? []}
+                    key={match.pattern.key}
+                    patternKey={match.pattern.key}
+                    title={match.pattern.title}
+                    explanation={match.pattern.explanation}
+                    personalizedText={match.pattern.whyRelates}
+                    confidence={match.confidence}
+                    examples={match.pattern.examples}
+                    actions={match.pattern.actions}
                   />
-                );
-              })
-            : state.matches.map((match) => (
-                <PatternCard
-                  key={match.pattern.key}
-                  patternKey={match.pattern.key}
-                  title={match.pattern.title}
-                  explanation={match.pattern.explanation}
-                  personalizedText={match.pattern.whyRelates}
-                  confidence={match.confidence}
-                  examples={match.pattern.examples}
-                  actions={match.pattern.actions}
-                />
-              ))}
-        </div>
+                ))}
+          </div>
+        )}
 
         {communityCount && (
           <div className="rounded-2xl bg-accent/40 border border-border/40 p-5 text-center">
