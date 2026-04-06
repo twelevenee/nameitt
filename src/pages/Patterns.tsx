@@ -8,6 +8,7 @@ import { ArrowLeft, TrendingUp, Brain, MapPin, ChevronDown, Send } from "lucide-
 import { supabase } from "@/integrations/supabase/client";
 import { PATTERNS } from "@/lib/patterns";
 import { PATTERN_ICONS } from "@/lib/patternIcons";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const CHART_COLORS = [
@@ -53,25 +54,25 @@ const EducationalCard = ({
     <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
-          <button className="w-full text-left">
-            <CardContent className="p-5 flex items-center gap-3">
+          <button className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl" aria-expanded={open}>
+            <CardContent className="p-4 sm:p-5 flex items-center gap-3">
               <span className="text-primary shrink-0">{PATTERN_ICONS[patternKey]}</span>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground font-sans text-base">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-1 line-clamp-2">{explanation}</p>
+                <h3 className="font-semibold text-foreground font-sans text-sm sm:text-base">{title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1 line-clamp-2 break-words">{explanation}</p>
               </div>
               <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
             </CardContent>
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <div className="px-5 pb-5 space-y-4">
+          <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
             {examples.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">What this can look like</p>
                 <ul className="space-y-1.5">
                   {examples.map((ex, i) => (
-                    <li key={i} className="text-sm text-foreground/70 leading-relaxed pl-3 border-l-2 border-primary/20">
+                    <li key={i} className="text-xs sm:text-sm text-foreground/70 leading-relaxed pl-3 border-l-2 border-primary/20 break-words">
                       "{ex}"
                     </li>
                   ))}
@@ -98,9 +99,36 @@ const EducationalCard = ({
   );
 };
 
+const MobileBarChart = ({ data, maxCount }: { data: { name: string; count: number }[]; maxCount: number }) => (
+  <div className="space-y-3">
+    {data.map((item, i) => (
+      <div key={item.name} className="space-y-1">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground truncate max-w-[70%]">{item.name}</span>
+          <span className="text-xs font-medium text-foreground">{item.count}</span>
+        </div>
+        <div className="h-2 rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${maxCount > 0 ? (item.count / maxCount) * 100 : 0}%`,
+              backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+            }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 const Patterns = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    document.title = "Anonymous Patterns — Was I Too Sensitive?";
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -117,7 +145,6 @@ const Patterns = () => {
         }
 
         const expIds = experiences.map((e) => e.id);
-
         const { data: analyses } = await supabase
           .from("analyses")
           .select("detected_patterns, self_doubt_detected")
@@ -171,11 +198,12 @@ const Patterns = () => {
   const hasData = stats && stats.totalExperiences > 0;
   const showPerPatternStats = (stats?.totalExperiences ?? 0) >= 5;
   const showChart = (stats?.totalExperiences ?? 0) >= 3;
+  const maxCount = stats?.patternCounts?.[0]?.count ?? 0;
 
   return (
-    <div className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
+    <div id="main-content" className="min-h-screen px-6 py-10" style={{ background: "var(--gradient-warm)" }}>
       <div className="max-w-3xl mx-auto space-y-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded">
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -187,16 +215,14 @@ const Patterns = () => {
           </p>
         </div>
 
-        {/* Why this matters */}
         <p className="text-sm text-muted-foreground leading-relaxed">
           Many people experience subtle forms of discrimination but struggle to name what happened. Research shows these experiences are widespread — seeing the patterns can help you recognize that what you felt was real.
         </p>
 
         {loading ? (
-          <p className="text-muted-foreground text-center py-20">Loading patterns…</p>
+          <p className="text-muted-foreground text-center py-20" role="status">Loading patterns…</p>
         ) : (
           <>
-            {/* Understanding the Patterns — always visible */}
             <div className="space-y-4">
               <h2 className="text-2xl text-foreground">Understanding the Patterns</h2>
               <div className="space-y-3">
@@ -215,12 +241,11 @@ const Patterns = () => {
               </div>
             </div>
 
-            {/* What People Are Sharing */}
             <div className="space-y-4">
               <h2 className="text-2xl text-foreground">What People Are Sharing</h2>
 
               {!hasData ? (
-                <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/40 p-8 text-center space-y-4">
+                <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/40 p-6 sm:p-8 text-center space-y-4">
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
                     As more people choose to share their anonymous reflections, patterns will appear here. Every contribution helps others feel less alone.
                   </p>
@@ -233,64 +258,68 @@ const Patterns = () => {
                 </div>
               ) : (
                 <>
-                  <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
                     <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-5 space-y-2">
+                      <CardContent className="p-4 sm:p-5 space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                           <TrendingUp className="w-4 h-4" />
                           <span className="text-xs font-medium uppercase tracking-wide">Most Common Pattern</span>
                         </div>
-                        <p className="text-xl font-semibold text-foreground font-sans">{stats!.topPattern}</p>
+                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans">{stats!.topPattern}</p>
                       </CardContent>
                     </Card>
 
                     <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-5 space-y-2">
+                      <CardContent className="p-4 sm:p-5 space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                           <Brain className="w-4 h-4" />
                           <span className="text-xs font-medium uppercase tracking-wide">Self-Doubt Detected</span>
                         </div>
-                        <p className="text-xl font-semibold text-foreground font-sans">{stats!.selfDoubtPercent}%</p>
+                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans">{stats!.selfDoubtPercent}%</p>
                         <p className="text-xs text-muted-foreground">of shared experiences</p>
                       </CardContent>
                     </Card>
 
                     <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-5 space-y-2">
+                      <CardContent className="p-4 sm:p-5 space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                           <MapPin className="w-4 h-4" />
                           <span className="text-xs font-medium uppercase tracking-wide">Most Common Context</span>
                         </div>
-                        <p className="text-xl font-semibold text-foreground font-sans capitalize">{stats!.topContext}</p>
+                        <p className="text-lg sm:text-xl font-semibold text-foreground font-sans capitalize">{stats!.topContext}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {showChart && stats!.patternCounts.length > 0 && (
                     <Card className="rounded-2xl border-border/50 bg-card/80 backdrop-blur-sm">
-                      <CardContent className="p-6 space-y-4">
-                        <h3 className="text-sm font-medium text-muted-foreground">
+                      <CardContent className="p-4 sm:p-6 space-y-4">
+                        <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
                           Most frequently identified patterns across all shared experiences
                         </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={stats!.patternCounts} layout="vertical" margin={{ left: 20 }}>
-                            <XAxis type="number" hide />
-                            <YAxis type="category" dataKey="name" width={160} tick={{ fontSize: 12, fill: "hsl(280, 8%, 50%)" }} />
-                            <Tooltip
-                              contentStyle={{
-                                background: "hsl(30, 20%, 99%)",
-                                border: "1px solid hsl(280, 10%, 88%)",
-                                borderRadius: "12px",
-                                fontSize: "13px",
-                              }}
-                            />
-                            <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-                              {stats!.patternCounts.map((_, i) => (
-                                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
+                        {isMobile ? (
+                          <MobileBarChart data={stats!.patternCounts} maxCount={maxCount} />
+                        ) : (
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={stats!.patternCounts} layout="vertical" margin={{ left: 20 }}>
+                              <XAxis type="number" hide />
+                              <YAxis type="category" dataKey="name" width={160} tick={{ fontSize: 12, fill: "hsl(280, 8%, 40%)" }} />
+                              <Tooltip
+                                contentStyle={{
+                                  background: "hsl(30, 20%, 99%)",
+                                  border: "1px solid hsl(280, 10%, 88%)",
+                                  borderRadius: "12px",
+                                  fontSize: "13px",
+                                }}
+                              />
+                              <Bar dataKey="count" radius={[0, 8, 8, 0]}>
+                                {stats!.patternCounts.map((_, i) => (
+                                  <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
                         <p className="text-xs text-muted-foreground text-center">
                           Based on {stats!.totalExperiences} anonymously shared {stats!.totalExperiences === 1 ? "experience" : "experiences"}
                         </p>
