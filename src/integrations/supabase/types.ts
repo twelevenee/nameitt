@@ -46,6 +46,38 @@ export type Database = {
           },
         ]
       }
+      checkins: {
+        Row: {
+          created_at: string
+          feeling: string
+          id: string
+          journal_user_id: string
+          note: string | null
+        }
+        Insert: {
+          created_at?: string
+          feeling: string
+          id?: string
+          journal_user_id: string
+          note?: string | null
+        }
+        Update: {
+          created_at?: string
+          feeling?: string
+          id?: string
+          journal_user_id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_journal_user_id_fkey"
+            columns: ["journal_user_id"]
+            isOneToOne: false
+            referencedRelation: "journal_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       experiences: {
         Row: {
           context_feeling: string | null
