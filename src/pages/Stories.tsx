@@ -284,6 +284,19 @@ const Stories = () => {
           })}
         </div>
 
+        {/* Context filter */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide" role="radiogroup" aria-label="Filter by context">
+          <button role="radio" aria-checked={contextFilter === null} onClick={() => setContextFilter(null)}
+            className={`${PILL_BASE} whitespace-nowrap ${contextFilter === null ? PILL_ACTIVE : PILL_INACTIVE}`}>All contexts</button>
+          {CONTEXT_OPTIONS.map((ctx) => (
+            <button key={ctx} role="radio" aria-checked={contextFilter === ctx} onClick={() => setContextFilter(ctx)}
+              className={`${PILL_BASE} whitespace-nowrap capitalize ${contextFilter === ctx ? PILL_ACTIVE : PILL_INACTIVE}`}>
+              {ctx}
+            </button>
+          ))}
+        </div>
+
+
         <div className="flex items-center gap-3">
           <Switch id="show-all" checked={showAll} onCheckedChange={handleShowAllToggle} />
           <label htmlFor="show-all" className="text-xs text-muted-foreground cursor-pointer">Show all stories openly</label>
