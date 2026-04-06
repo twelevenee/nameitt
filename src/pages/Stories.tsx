@@ -32,6 +32,8 @@ interface Story {
   title: string;
   story: string;
   primary_pattern: string;
+  context: string | null;
+  feeling: string | null;
   resonates: number;
   created_at: string;
   story_type: string;
@@ -39,6 +41,8 @@ interface Story {
   sensitive_content_type: string | null;
   source_note: string | null;
 }
+
+const CONTEXT_OPTIONS = ["workplace", "school", "public space", "relationship", "family", "online"];
 
 const RESONATED_KEY = "resonated_stories";
 const SHOW_ALL_KEY = "stories_show_all";
