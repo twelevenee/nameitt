@@ -8,6 +8,7 @@ import Reflect from "./pages/Reflect";
 import Results from "./pages/Results";
 import Patterns from "./pages/Patterns";
 import Journal from "./pages/Journal";
+import SharedSummary from "./pages/SharedSummary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/results" element={<Results />} />
           <Route path="/patterns" element={<Patterns />} />
           <Route path="/my-journal" element={<Journal />} />
+          <Route path="/shared/:id" element={<SharedSummary />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

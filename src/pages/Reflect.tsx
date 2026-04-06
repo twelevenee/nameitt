@@ -180,7 +180,7 @@ const Reflect = () => {
       if (anaErr) throw anaErr;
 
       navigate("/results", {
-        state: { experienceId, matches: localAnalysis.matches, selfDoubtDetected, lowConfidence: aiResult ? false : localAnalysis.lowConfidence, aiResult },
+        state: { experienceId, matches: localAnalysis.matches, selfDoubtDetected, lowConfidence: aiResult ? false : localAnalysis.lowConfidence, aiResult, contextWhere: where, contextFeeling: feelings.join(", ") },
       });
     } catch {
       toast({ title: "Something went wrong. Please try again.", variant: "destructive" });

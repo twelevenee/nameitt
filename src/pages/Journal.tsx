@@ -34,6 +34,7 @@ interface JournalExperience {
   context_feeling: string | null;
   self_doubt: string | null;
   analyses: { detected_patterns: unknown; self_doubt_detected: boolean }[];
+  scripts: { scripts: unknown; safety_note: string | null }[];
 }
 
 interface JournalCheckin {
@@ -381,7 +382,7 @@ const JournalTimeline = () => {
       const [expRes, checkinRes] = await Promise.all([
         supabase
           .from("experiences")
-          .select("id, created_at, context_where, context_feeling, self_doubt, analyses(detected_patterns, self_doubt_detected)")
+          .select("id, created_at, context_where, context_feeling, self_doubt, analyses(detected_patterns, self_doubt_detected), scripts(scripts, safety_note)")
           .eq("journal_user_id", userId)
           .order("created_at", { ascending: false }),
         supabase
@@ -546,6 +547,24 @@ const JournalTimeline = () => {
                           )}
                           {analysis?.self_doubt_detected && (
                             <p className="text-xs text-muted-foreground italic">Self-doubt was detected in this reflection</p>
+                          )}
+                          {entry.scripts?.[0]?.scripts && (
+                            <Collapsible>
+                              <CollapsibleTrigger asChild>
+                                <button className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors pt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
+                                  Your practiced responses
+                                  <ChevronDown className="w-3 h-3" aria-hidden="true" />
+                                </button>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-2 space-y-2">
+                                {(Array.isArray(entry.scripts[0].scripts) ? entry.scripts[0].scripts as { tone: string; text: string; why: string }[] : []).map((s, i) => (
+                                  <div key={i} className="rounded-xl bg-background/60 p-3 space-y-1">
+                                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{s.tone}</p>
+                                    <p className="text-sm text-foreground leading-relaxed">"{s.text}"</p>
+                                  </div>
+                                ))}
+                              </CollapsibleContent>
+                            </Collapsible>
                           )}
                         </div>
                       </div>
