@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, Heart, Shield, Eye, Users, MessageCircle, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import type { Pattern } from "@/lib/patterns";
+import type { PatternMatch } from "@/lib/patterns";
 
 const PATTERN_ICONS: Record<string, React.ReactNode> = {
   emotional_invalidation: <MessageCircle className="w-5 h-5" />,
@@ -21,8 +21,9 @@ const Results = () => {
   const location = useLocation();
   const state = location.state as {
     experienceId: string;
-    patterns: Pattern[];
+    matches: PatternMatch[];
     selfDoubtDetected: boolean;
+    lowConfidence: boolean;
   } | null;
 
   const [resonated, setResonated] = useState<string | null>(null);
@@ -66,7 +67,9 @@ const Results = () => {
             Possible patterns related to your experience
           </h1>
           <p className="text-muted-foreground">
-            These are not definitive labels — they are concepts that may help you understand what happened.
+            {state.lowConfidence
+              ? "We weren't able to identify a specific pattern, but here are some common ones that may still be relevant."
+              : "These are not definitive labels — they are concepts that may help you understand what happened."}
           </p>
         </div>
 
@@ -82,15 +85,15 @@ const Results = () => {
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {state.patterns.map((pattern) => (
-            <Card key={pattern.key} className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
+          {state.matches.map((match) => (
+            <Card key={match.pattern.key} className="border-border/50 bg-card/80 backdrop-blur-sm shadow-sm rounded-2xl">
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center gap-3 text-primary">
-                  {PATTERN_ICONS[pattern.key]}
-                  <h3 className="font-semibold text-foreground font-sans text-base">{pattern.title}</h3>
+                  {PATTERN_ICONS[match.pattern.key]}
+                  <h3 className="font-semibold text-foreground font-sans text-base">{match.pattern.title}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{pattern.explanation}</p>
-                <p className="text-sm text-foreground/80 italic leading-relaxed">{pattern.whyRelates}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{match.pattern.explanation}</p>
+                <p className="text-sm text-foreground/80 italic leading-relaxed">{match.pattern.whyRelates}</p>
               </CardContent>
             </Card>
           ))}
