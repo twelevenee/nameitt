@@ -112,12 +112,20 @@ const RevealSection = ({ visible, children, onSkip }: { visible: boolean; childr
   </div>
 );
 
+const SAFETY_PHRASES = [
+  "can't leave", "afraid to go home", "he'll hurt", "she'll hurt",
+  "threatened to", "scared for my life", "locked me", "won't let me leave",
+];
+
+const SAFETY_DISMISSED_KEY = "safety_interstitial_dismissed";
+
 const Reflect = () => {
   const [description, setDescription] = useState("");
   const [where, setWhere] = useState<string | null>(null);
   const [feelings, setFeelings] = useState<string[]>([]);
   const [doubt, setDoubt] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [safetyDismissed, setSafetyDismissed] = useState(() => sessionStorage.getItem(SAFETY_DISMISSED_KEY) === "true");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -130,7 +138,22 @@ const Reflect = () => {
   const MAX_CHARS = 2000;
   const overLimit = charCount > MAX_CHARS;
 
-  useEffect(() => { document.title = "Share Your Experience — Was I Too Sensitive?"; }, []);
+  const shouldShowSafety = useMemo(() => {
+    if (safetyDismissed) return false;
+    const feelsUnsafe = feelings.includes("unsafe");
+    if (!feelsUnsafe) return false;
+    const doubted = doubt === "yes";
+    const textLower = description.toLowerCase();
+    const hasTriggerPhrase = SAFETY_PHRASES.some((p) => textLower.includes(p));
+    return doubted || hasTriggerPhrase;
+  }, [feelings, doubt, description, safetyDismissed]);
+
+  const handleDismissSafety = () => {
+    setSafetyDismissed(true);
+    sessionStorage.setItem(SAFETY_DISMISSED_KEY, "true");
+  };
+
+  useEffect(() => { document.title = "Share Your Experience — Name It"; }, []);
   useEffect(() => { if (charCount >= 20 && !showWhere) setShowWhere(true); }, [charCount, showWhere]);
   useEffect(() => { if (where !== null && !showFeelings) setShowFeelings(true); }, [where, showFeelings]);
   useEffect(() => { if (feelings.length > 0 && !showDoubt) setShowDoubt(true); }, [feelings, showDoubt]);
